@@ -170,116 +170,97 @@ export default {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
+/* HEADER */
 .app-header {
   background: rgba(0, 0, 0, 0.3);
   color: white;
-  padding: 2rem;
+  padding: 1.25rem;
   text-align: center;
   border-bottom: 3px solid rgba(255, 255, 255, 0.2);
 }
 
 .app-header h1 {
   margin: 0;
-  font-size: 2.5rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-size: 1.6rem;
 }
 
 .subtitle {
   margin: 0.5rem 0 0 0;
   opacity: 0.9;
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
+/* LAYOUT PRINCIPAL */
 .app-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  padding: 2rem;
+  gap: 1.5rem;
+  padding: 1.5rem;
   max-width: 1600px;
   margin: 0 auto;
-  min-height: calc(100vh - 160px);
 }
 
+/* PANELS */
 .left-panel, .right-panel {
   background: white;
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 1rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
+/* DETALLES */
 .appointment-details {
-  margin-top: 2rem;
-  padding: 1.5rem;
+  margin-top: 1.5rem;
+  padding: 1rem;
   background: #f8f9fa;
   border-radius: 8px;
   border-left: 4px solid #667eea;
 }
 
-.appointment-details h3 {
-  margin-top: 0;
-  color: #333;
-}
-
-.detail-item {
-  margin: 1rem 0;
-  font-size: 0.95rem;
-}
-
-.detail-item strong {
-  color: #667eea;
-  display: inline-block;
-  width: 80px;
-}
-
-.status-confirmed {
-  color: #28a745;
-  font-weight: bold;
-}
-
-.status-cancelled {
-  color: #dc3545;
-  font-weight: bold;
-}
-
-.status-pending {
-  color: #ffc107;
-  font-weight: bold;
-}
-
+/* NOTIFICACIONES */
 .notification {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  padding: 1rem 1.5rem;
+  bottom: 1rem;
+  right: 1rem;
+  left: 1rem;
+  padding: 1rem;
   border-radius: 8px;
   color: white;
   font-weight: 500;
   z-index: 1000;
-  animation: slideIn 0.3s ease-out;
 }
 
-@keyframes slideIn {
-  from {
-    transform: translateX(400px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-.notification-success {
-  background: #28a745;
-}
-
-.notification-error {
-  background: #dc3545;
-}
-
-@media (max-width: 1200px) {
+/* 📱 MOBILE */
+@media (max-width: 768px) {
   .app-container {
     grid-template-columns: 1fr;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .app-header h1 {
+    font-size: 1.3rem;
+  }
+
+  .left-panel, .right-panel {
+    padding: 0.75rem;
+  }
+}
+
+/* 📱 SMALL MOBILE */
+@media (max-width: 480px) {
+  .app-header {
+    padding: 1rem;
+  }
+
+  .subtitle {
+    font-size: 0.8rem;
+  }
+
+  .app-container {
+    padding: 0.75rem;
   }
 }
 </style>
+ 
