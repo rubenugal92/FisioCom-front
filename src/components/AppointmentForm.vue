@@ -237,40 +237,139 @@ export default {
 
 <style scoped>
 .form-container {
-  padding: 1rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
 }
 
-/* FORM */
+.form-container h3 {
+  margin-top: 0;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
 .appointment-form {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
-/* INPUTS */
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
 .form-group input,
 .form-group select,
 .form-group textarea {
-  padding: 0.65rem;
-  font-size: 1rem; /* importante en móvil */
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.3s ease;
 }
 
-/* BOTONES */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group input:disabled,
+.form-group select:disabled,
+.form-group textarea:disabled {
+  background: #e9ecef;
+  cursor: not-allowed;
+  color: #999;
+}
+
+.form-group small {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+}
+
+.text-danger {
+  color: #dc3545;
+}
+
 .form-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: 1rem;
   margin-top: 1rem;
 }
 
-/* 📱 MOBILE */
-@media (max-width: 768px) {
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #764ba2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: white;
+  flex: 0.5;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #c82333;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+  flex: 0.5;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #5a6268;
+}
+@media (max-width: 600px) {
+  .form-container {
+    padding: 1rem;
+  }
+
   .form-actions {
     flex-direction: column;
   }
 
   .btn {
     width: 100%;
-    padding: 0.85rem;
+  }
+
+  .btn-danger,
+  .btn-secondary {
+    flex: 1;
   }
 }
 </style>
