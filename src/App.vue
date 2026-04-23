@@ -280,16 +280,6 @@ const formatDateTime = (datetime) => {
   background: #dc3545;
 }
 
-.app-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  padding: 2rem;
-  max-width: 1600px;
-  margin: 0 auto;
-  min-height: calc(100vh - 160px);
-}
-
 /* === TABLET === */
 @media (max-width: 1024px) {
   .app-container {
@@ -307,7 +297,7 @@ const formatDateTime = (datetime) => {
   .app-container {
     display: flex;
     flex-direction: column;
-    align-items: center;   /* 🔥 clave del centrado */
+    align-items: center;
     justify-content: flex-start;
     padding: 1rem;
     gap: 1rem;
