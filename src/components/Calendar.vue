@@ -309,4 +309,88 @@ export default {
   background: #f0e6ff;
   border-color: #764ba2;
 }
+
+.appointment-count {
+  font-size: 0.75rem;
+  background: #ff6b6b;
+  color: white;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  margin-top: 0.25rem;
+}
+.appointment-card {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-left: 4px solid #667eea;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.appointment-card:hover {
+  background: #e9ecef;
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.appointment-time {
+  font-weight: bold;
+  color: #667eea;
+  font-size: 1rem;
+}
+.appointment-phone {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+}
+
+appointment-status {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.appointment-status-confirmed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.appointment-status-cancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.appointment-status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.appointments-list {
+  margin-top: 1rem;
+}
+
+.appointments-list h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 1.1rem;
+  text-transform: capitalize;
+}
+
+.appointments {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.no-appointments {
+  text-align: center;
+  color: #999;
+  padding: 2rem 1rem;
+  font-size: 0.95rem;
+}
 </style>
