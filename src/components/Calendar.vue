@@ -165,12 +165,13 @@ export default {
         .sort((a, b) => new Date(a.datetime) - new Date(b.datetime))
     })
 
-    const formatTime = (datetime) => {
-      return new Date(datetime).toLocaleTimeString('es-ES', {
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-    }
+  const formatTime = (datetime) => {
+  return new Date(datetime).toLocaleTimeString('es-ES', {
+    timeZone: 'Europe/Madrid', // 🔥 clave
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
 
     return {
       currentDate,

@@ -161,13 +161,15 @@ export default {
     }
 
     const submitForm = async () => {
-      const appointmentData = {
-        phone: form.value.phone,
-        datetime: `${form.value.date}T${form.value.time}:00`,
-        service: form.value.service,
-        status: form.value.status,
-        notes: form.value.notes
-      }
+  const localDate = new Date(`${form.value.date}T${form.value.time}:00`)
+
+  const appointmentData = {
+    phone: form.value.phone,
+    datetime: localDate.toISOString(), 
+    service: form.value.service,
+    status: form.value.status,
+    notes: form.value.notes
+  }
 
       try {
         if (isEditing.value) {

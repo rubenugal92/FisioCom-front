@@ -129,17 +129,20 @@ export default {
       }, 3000)
     }
 
-    const formatDateTime = (datetime) => {
-      if (!datetime) return ''
-      const date = new Date(datetime)
-      return date.toLocaleString('es-ES', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-    }
+const formatDateTime = (datetime) => {
+  if (!datetime) return ''
+
+  const date = new Date(datetime)
+
+  return date.toLocaleString('es-ES', {
+    timeZone: 'Europe/Madrid', // 🔥 clave
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
 
     onMounted(() => {
       loadAppointments()
