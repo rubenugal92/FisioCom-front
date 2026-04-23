@@ -150,8 +150,11 @@ export default {
 
     const submitForm = async () => {
 
-      // 🔥 FIX CRÍTICO: NO UTC
-      const datetime = `${form.value.date}T${form.value.time}:00`
+      // 🔥 FIX: Convertir hora local España (UTC+2 CEST) a UTC
+      // Si usuario selecciona 15:00, guardamos como 13:00 UTC
+      const [hours, minutes] = form.value.time.split(':').map(Number)
+      const utcHours = String((hours - 2 + 24) % 24).padStart(2, '0')
+      const datetime = `${form.value.date}T${utcHours}:${minutes}:00`
 
       const appointmentData = {
         phone: form.value.phone,
@@ -188,7 +191,13 @@ export default {
 
       form.value.phone = a.phone
       form.value.date = a.datetime.split('T')[0]
-      form.value.time = a.datetime.split('T')[1].slice(0,5)
+      
+      // 🔥 FIX: Convertir UTC a zona horaria local España (UTC+2 CEST)
+      const timePart = a.datetime.split('T')[1].slice(0,5)
+      const [hours, minutes] = timePart.split(':').map(Number)
+      const localHours = String((hours + 2) % 24).padStart(2, '0')
+      form.value.time = `${localHours}:${minutes}`
+      
       form.value.service = a.service
       form.value.status = a.status
       form.value.notes = a.notes || ''
