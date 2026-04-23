@@ -37,7 +37,6 @@
             {{ slot }}
           </option>
         </select>
-
         <small v-if="availableSlots.length === 0" class="text-danger">
           No hay horarios disponibles para esta fecha
         </small>
@@ -57,7 +56,6 @@
         <label>Notas</label>
         <textarea 
           v-model="form.notes"
-          placeholder="Notas adicionales..."
           rows="3"
           :disabled="loading"
         ></textarea>
@@ -73,17 +71,13 @@
       </div>
 
       <div class="form-actions">
-        <button 
-          type="submit" 
-          class="btn btn-primary"
-          :disabled="loading"
-        >
+        <button type="submit" class="btn btn-primary" :disabled="loading">
           {{ loading ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear Cita') }}
         </button>
-        
+
         <button 
           v-if="isEditing"
-          type="button" 
+          type="button"
           class="btn btn-danger"
           @click="handleDelete"
           :disabled="loading"
@@ -92,7 +86,7 @@
         </button>
 
         <button 
-          type="button" 
+          type="button"
           class="btn btn-secondary"
           @click="resetForm"
           :disabled="loading"
@@ -106,12 +100,7 @@
 
 <script>
 import { ref, computed, watch } from 'vue'
-import { 
-  createAppointment, 
-  updateAppointment as updateAppointmentAPI,
-  deleteAppointment as deleteAppointmentAPI,
-  getAvailableSlots
-} from '../api/appointments.js'
+import { createAppointment, updateAppointment as updateAppointmentAPI, deleteAppointment as deleteAppointmentAPI, getAvailableSlots } from '../api/appointments.js'
 
 export default {
   name: 'AppointmentForm',
@@ -151,37 +140,22 @@ export default {
 
     const updateAvailableSlots = async () => {
       if (!form.value.date) return
-      
       try {
-        const slots = await getAvailableSlots(form.value.date)
-        availableSlots.value = slots
+        availableSlots.value = await getAvailableSlots(form.value.date)
         form.value.time = ''
-      } catch (error) {
-        console.error('Error fetching available slots:', error)
+      } catch (e) {
         availableSlots.value = []
       }
     }
 
-    // 🔥 FUNCIÓN CLAVE ARREGLADA
     const submitForm = async () => {
 
-      // VALIDACIÓN REAL
-      if (!form.value.date || !form.value.time) {
-        alert('Selecciona fecha y hora')
-        return
-      }
-
-      const localDate = new Date(`${form.value.date}T${form.value.time}:00`)
-
-      if (isNaN(localDate.getTime())) {
-        console.error('Fecha inválida:', form.value)
-        alert('Fecha inválida')
-        return
-      }
+      // 🔥 FIX CRÍTICO: NO UTC
+      const datetime = `${form.value.date}T${form.value.time}:00`
 
       const appointmentData = {
         phone: form.value.phone,
-        datetime: localDate.toISOString(), // backend sigue en ISO
+        datetime,
         service: form.value.service,
         status: form.value.status,
         notes: form.value.notes
@@ -197,54 +171,34 @@ export default {
         emit('save', appointmentData)
         resetForm()
 
-      } catch (error) {
-        console.error('Error saving appointment:', error)
-        throw error
+      } catch (e) {
+        console.error(e)
       }
     }
 
     const handleDelete = async () => {
       if (!props.appointment) return
-      
-      if (!confirm('¿Estás seguro de que deseas eliminar esta cita?')) return
-
-      try {
-        await deleteAppointmentAPI(props.appointment.id)
-        emit('delete', props.appointment.id)
-        resetForm()
-      } catch (error) {
-        console.error('Error deleting appointment:', error)
-        throw error
-      }
+      await deleteAppointmentAPI(props.appointment.id)
+      emit('delete', props.appointment.id)
+      resetForm()
     }
 
-    // 🔥 FIX TIMEZONE AQUÍ
-    watch(() => props.appointment, (newAppointment) => {
-      if (newAppointment) {
-        const datetime = new Date(newAppointment.datetime)
+    watch(() => props.appointment, (a) => {
+      if (!a) return
 
-        form.value.phone = newAppointment.phone
+      form.value.phone = a.phone
+      form.value.date = a.datetime.split('T')[0]
+      form.value.time = a.datetime.split('T')[1].slice(0,5)
+      form.value.service = a.service
+      form.value.status = a.status
+      form.value.notes = a.notes || ''
 
-        // ✅ LOCAL (NO UTC)
-        form.value.date = datetime.toLocaleDateString('en-CA')
-
-        form.value.time = datetime.toLocaleTimeString('es-ES', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false
-        })
-
-        form.value.service = newAppointment.service
-        form.value.status = newAppointment.status
-        form.value.notes = newAppointment.notes || ''
-
-        updateAvailableSlots()
-      }
+      updateAvailableSlots()
     }, { deep: true })
 
-    watch(() => props.selectedDate, (newDate) => {
-      if (newDate && !props.appointment) {
-        form.value.date = newDate
+    watch(() => props.selectedDate, (d) => {
+      if (d && !props.appointment) {
+        form.value.date = d
         updateAvailableSlots()
       }
     })
@@ -261,58 +215,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.form-container {
-  padding: 1.5rem;
-  background: #f8f9fa;
-  border-radius: 8px;
-}
-
-.appointment-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  padding: 0.75rem;
-  border: 2px solid #e0e0e0;
-  border-radius: 6px;
-}
-
-.form-actions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.btn {
-  padding: 0.75rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.btn-primary {
-  background: #667eea;
-  color: white;
-}
-
-.btn-danger {
-  background: #dc3545;
-  color: white;
-}
-
-.btn-secondary {
-  background: #6c757d;
-  color: white;
-}
-</style>
