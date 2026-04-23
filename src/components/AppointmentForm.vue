@@ -37,6 +37,7 @@
             {{ slot }}
           </option>
         </select>
+
         <small v-if="availableSlots.length === 0" class="text-danger">
           No hay horarios disponibles para esta fecha
         </small>
@@ -121,6 +122,7 @@ export default {
   },
   emits: ['save', 'delete', 'clear'],
   setup(props, { emit }) {
+
     const form = ref({
       phone: '',
       date: '',
@@ -153,23 +155,37 @@ export default {
       try {
         const slots = await getAvailableSlots(form.value.date)
         availableSlots.value = slots
-        form.value.time = '' // Reset time when date changes
+        form.value.time = ''
       } catch (error) {
         console.error('Error fetching available slots:', error)
         availableSlots.value = []
       }
     }
 
+    // 🔥 FUNCIÓN CLAVE ARREGLADA
     const submitForm = async () => {
-  const localDate = new Date(`${form.value.date}T${form.value.time}:00`)
 
-  const appointmentData = {
-    phone: form.value.phone,
-    datetime: localDate.toISOString(), 
-    service: form.value.service,
-    status: form.value.status,
-    notes: form.value.notes
-  }
+      // VALIDACIÓN REAL
+      if (!form.value.date || !form.value.time) {
+        alert('Selecciona fecha y hora')
+        return
+      }
+
+      const localDate = new Date(`${form.value.date}T${form.value.time}:00`)
+
+      if (isNaN(localDate.getTime())) {
+        console.error('Fecha inválida:', form.value)
+        alert('Fecha inválida')
+        return
+      }
+
+      const appointmentData = {
+        phone: form.value.phone,
+        datetime: localDate.toISOString(), // backend sigue en ISO
+        service: form.value.service,
+        status: form.value.status,
+        notes: form.value.notes
+      }
 
       try {
         if (isEditing.value) {
@@ -177,8 +193,10 @@ export default {
         } else {
           await createAppointment(appointmentData)
         }
+
         emit('save', appointmentData)
         resetForm()
+
       } catch (error) {
         console.error('Error saving appointment:', error)
         throw error
@@ -188,9 +206,7 @@ export default {
     const handleDelete = async () => {
       if (!props.appointment) return
       
-      if (!confirm('¿Estás seguro de que deseas eliminar esta cita?')) {
-        return
-      }
+      if (!confirm('¿Estás seguro de que deseas eliminar esta cita?')) return
 
       try {
         await deleteAppointmentAPI(props.appointment.id)
@@ -202,21 +218,30 @@ export default {
       }
     }
 
-    // Watch for appointment changes to populate the form
+    // 🔥 FIX TIMEZONE AQUÍ
     watch(() => props.appointment, (newAppointment) => {
       if (newAppointment) {
         const datetime = new Date(newAppointment.datetime)
+
         form.value.phone = newAppointment.phone
-        form.value.date = datetime.toISOString().split('T')[0]
-        form.value.time = datetime.toTimeString().slice(0, 5)
+
+        // ✅ LOCAL (NO UTC)
+        form.value.date = datetime.toLocaleDateString('en-CA')
+
+        form.value.time = datetime.toLocaleTimeString('es-ES', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        })
+
         form.value.service = newAppointment.service
         form.value.status = newAppointment.status
         form.value.notes = newAppointment.notes || ''
+
         updateAvailableSlots()
       }
     }, { deep: true })
 
-    // Set initial date when selectedDate changes
     watch(() => props.selectedDate, (newDate) => {
       if (newDate && !props.appointment) {
         form.value.date = newDate
@@ -244,12 +269,6 @@ export default {
   border-radius: 8px;
 }
 
-.form-container h3 {
-  margin-top: 0;
-  color: #333;
-  margin-bottom: 1.5rem;
-}
-
 .appointment-form {
   display: flex;
   flex-direction: column;
@@ -261,47 +280,12 @@ export default {
   flex-direction: column;
 }
 
-.form-group label {
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: #333;
-  font-size: 0.9rem;
-}
-
 .form-group input,
 .form-group select,
 .form-group textarea {
   padding: 0.75rem;
   border: 2px solid #e0e0e0;
   border-radius: 6px;
-  font-family: inherit;
-  font-size: 0.95rem;
-  transition: border-color 0.3s ease;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.form-group input:disabled,
-.form-group select:disabled,
-.form-group textarea:disabled {
-  background: #e9ecef;
-  cursor: not-allowed;
-  color: #999;
-}
-
-.form-group small {
-  margin-top: 0.25rem;
-  font-size: 0.8rem;
-}
-
-.text-danger {
-  color: #dc3545;
 }
 
 .form-actions {
@@ -311,19 +295,10 @@ export default {
 }
 
 .btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem;
   border: none;
   border-radius: 6px;
-  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  flex: 1;
-  font-size: 0.95rem;
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 .btn-primary {
@@ -331,47 +306,13 @@ export default {
   color: white;
 }
 
-.btn-primary:hover:not(:disabled) {
-  background: #764ba2;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
 .btn-danger {
   background: #dc3545;
   color: white;
-  flex: 0.5;
-}
-
-.btn-danger:hover:not(:disabled) {
-  background: #c82333;
 }
 
 .btn-secondary {
   background: #6c757d;
   color: white;
-  flex: 0.5;
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: #5a6268;
-}
-@media (max-width: 600px) {
-  .form-container {
-    padding: 1rem;
-  }
-
-  .form-actions {
-    flex-direction: column;
-  }
-
-  .btn {
-    width: 100%;
-  }
-
-  .btn-danger,
-  .btn-secondary {
-    flex: 1;
-  }
 }
 </style>
