@@ -131,15 +131,18 @@ export default {
 
     const formatDateTime = (datetime) => {
       if (!datetime) return ''
+
       const date = new Date(datetime)
-      return date.toLocaleString('es-ES', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-    }
+
+  return date.toLocaleString('es-ES', {
+    timeZone: 'Europe/Madrid',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
 
     onMounted(() => {
       loadAppointments()
