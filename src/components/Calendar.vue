@@ -292,6 +292,9 @@ export default {
   justify-content: center;
   flex-direction: column;
   cursor: pointer;
+  min-width: 0;
+  padding: 0.5rem;
+  box-sizing: border-box;
 }
 
 .day.empty {
@@ -317,6 +320,19 @@ export default {
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   margin-top: 0.25rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+ .appointment-status {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 .appointment-card {
   background: #f8f9fa;
