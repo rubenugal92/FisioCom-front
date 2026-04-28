@@ -15,6 +15,24 @@
       </div>
 
       <div class="form-group">
+        <label>Fisioterapeuta</label>
+        <select 
+          v-model="form.fisio_id"
+          required
+          :disabled="loading || fisios.length === 0"
+          @change="updateAvailableSlots"
+        >
+          <option value="">Selecciona un fisio</option>
+          <option v-for="fisio in fisios" :key="fisio.id" :value="fisio.id">
+            {{ fisio.name }}{{ fisio.specialties ? ` (${fisio.specialties})` : '' }}
+          </option>
+        </select>
+        <small v-if="fisios.length === 0" class="text-danger">
+          No hay fisioterapeutas disponibles
+        </small>
+      </div>
+
+      <div class="form-group">
         <label>Fecha</label>
         <input 
           v-model="form.date"
@@ -37,8 +55,8 @@
             {{ slot }}
           </option>
         </select>
-        <small v-if="availableSlots.length === 0" class="text-danger">
-          No hay horarios disponibles para esta fecha
+        <small v-if="availableSlots.length === 0 && form.date && form.fisio_id" class="text-danger">
+          No hay horarios disponibles para esta fecha con este fisio
         </small>
       </div>
 
@@ -99,8 +117,8 @@
 </template>
 
 <script>
-import { ref, computed, watch } from 'vue'
-import { createAppointment, updateAppointment as updateAppointmentAPI, deleteAppointment as deleteAppointmentAPI, getAvailableSlots } from '../api/appointments.js'
+import { ref, computed, watch, onMounted } from 'vue'
+import { createAppointment, updateAppointment as updateAppointmentAPI, deleteAppointment as deleteAppointmentAPI, getAvailableSlots, getAllFisios } from '../api/appointments.js'
 
 export default {
   name: 'AppointmentForm',
@@ -116,20 +134,32 @@ export default {
       phone: '',
       date: '',
       time: '',
+      fisio_id: '',
       service: 'physio',
       status: 'confirmed',
       notes: ''
     })
 
     const availableSlots = ref([])
+    const fisios = ref([])
 
     const isEditing = computed(() => !!props.appointment?.id)
+
+    const loadFisios = async () => {
+      try {
+        fisios.value = await getAllFisios()
+      } catch (e) {
+        console.error('Error loading fisios:', e)
+        fisios.value = []
+      }
+    }
 
     const resetForm = () => {
       form.value = {
         phone: '',
         date: props.selectedDate || '',
         time: '',
+        fisio_id: '',
         service: 'physio',
         status: 'confirmed',
         notes: ''
@@ -139,11 +169,15 @@ export default {
     }
 
     const updateAvailableSlots = async () => {
-      if (!form.value.date) return
+      if (!form.value.date || !form.value.fisio_id) {
+        availableSlots.value = []
+        return
+      }
       try {
-        availableSlots.value = await getAvailableSlots(form.value.date)
+        availableSlots.value = await getAvailableSlots(form.value.date, form.value.fisio_id)
         form.value.time = ''
       } catch (e) {
+        console.error('Error fetching slots:', e)
         availableSlots.value = []
       }
     }
@@ -161,7 +195,8 @@ export default {
         datetime,
         service: form.value.service,
         status: form.value.status,
-        notes: form.value.notes
+        notes: form.value.notes,
+        fisio_id: parseInt(form.value.fisio_id)
       }
 
       try {
@@ -176,6 +211,7 @@ export default {
 
       } catch (e) {
         console.error(e)
+        alert('Error: ' + (e.response?.data?.error || e.message))
       }
     }
 
@@ -191,6 +227,7 @@ export default {
 
       form.value.phone = a.phone
       form.value.date = a.datetime.split('T')[0]
+      form.value.fisio_id = a.fisio_id || ''
       
       // 🔥 FIX: Convertir UTC a zona horaria local España (UTC+2 CEST)
       const timePart = a.datetime.split('T')[1].slice(0,5)
@@ -212,9 +249,14 @@ export default {
       }
     })
 
+    onMounted(() => {
+      loadFisios()
+    })
+
     return {
       form,
       availableSlots,
+      fisios,
       isEditing,
       resetForm,
       updateAvailableSlots,
