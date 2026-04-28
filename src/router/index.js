@@ -6,9 +6,20 @@ import { useAuthStore } from '../stores/auth'
 
 const routes = [
   { path: '/login', component: LoginPage },
+
   { path: '/', redirect: '/citas' },
-  { path: '/citas', component: AppointmentsPage, meta: { requiresAuth: true } },
-  { path: '/fisios', component: FisiosPage, meta: { requiresAuth: true } }
+
+  {
+    path: '/citas',
+    component: AppointmentsPage,
+    meta: { requiresAuth: true }
+  },
+
+  {
+    path: '/fisios',
+    component: FisiosPage,
+    meta: { requiresAuth: true }
+  }
 ]
 
 const router = createRouter({

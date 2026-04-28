@@ -1,44 +1,41 @@
 import { defineStore } from 'pinia'
 import {
-  getAllAppointments,
+  getAppointments,
   createAppointment,
   updateAppointment,
   deleteAppointment
-} from '../api/appointments'
+} from '../api/appointments.js'
 
 export const useAppointmentsStore = defineStore('appointments', {
   state: () => ({
     items: [],
-    loading: false,
     selected: null
   }),
 
   actions: {
-    async fetch() {
-      this.loading = true
-      try {
-        this.items = await getAllAppointments()
-      } finally {
-        this.loading = false
-      }
-    },
-
-    async save(data) {
-      if (data.id) {
-        await updateAppointment(data.id, data)
-      } else {
-        await createAppointment(data)
-      }
-      await this.fetch()
-    },
-
-    async remove(id) {
-      await deleteAppointment(id)
-      await this.fetch()
+    async load() {
+      this.items = await getAppointments()
     },
 
     select(appointment) {
       this.selected = appointment
+    },
+
+    async save(data) {
+      if (this.selected?.id) {
+        await updateAppointment(this.selected.id, data)
+      } else {
+        await createAppointment(data)
+      }
+
+      await this.load()
+      this.selected = null
+    },
+
+    async remove(id) {
+      await deleteAppointment(id)
+      await this.load()
+      this.selected = null
     }
   }
 })
