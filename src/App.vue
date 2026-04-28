@@ -696,14 +696,7 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-  }
-
-  .fisios-grid {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
-    justify-content: flex-start;
+    justify-content: flex-start;   /* 👈 ESTO VA AQUÍ */
     padding: 1rem;
     gap: 1rem;
   }
@@ -714,6 +707,9 @@ export default {
     max-width: 520px;
     margin: 0 auto;
   }
-}
 
+  .fisios-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
