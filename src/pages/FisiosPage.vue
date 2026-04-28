@@ -1,11 +1,9 @@
 <template>
-  <div>
-    <FisioForm />
-    <FisioList />
+  <div class="fisios-page">
+    <h2>Fisioterapeutas</h2>
+    <p>Gestión de fisios en desarrollo</p>
   </div>
 </template>
 
 <script setup>
-import FisioForm from '../components/FisioForm.vue'
-import FisioList from '../components/FisioList.vue'
 </script>
