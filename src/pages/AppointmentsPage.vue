@@ -13,8 +13,8 @@
       <AppointmentForm
         :appointment="store.selected"
         :selected-date="selectedDate"
-        @save="store.save"
-        @delete="store.remove"
+        @save="handleSave"
+        @delete="handleDelete"
         @clear="store.select(null)"
       />
     </div>
@@ -38,5 +38,15 @@ onMounted(() => {
 
 const onDateSelected = (date) => {
   selectedDate.value = date
+}
+
+const handleSave = async (data) => {
+  await store.load()
+  store.select(null)
+}
+
+const handleDelete = async (id) => {
+  await store.load()
+  store.select(null)
 }
 </script>

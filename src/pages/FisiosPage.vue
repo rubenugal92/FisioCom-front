@@ -55,7 +55,7 @@
           </button>
           <button 
             class="btn btn-danger"
-            @click="store.remove(fisio.id)"
+            @click="handleDelete(fisio.id)"
           >
             🗑️ Eliminar
           </button>
@@ -87,6 +87,13 @@ const handleSave = async () => {
   await store.fetch()
   showForm.value = false
   editingFisio.value = null
+}
+
+const handleDelete = async (id) => {
+  if (confirm('¿Estás seguro de que deseas eliminar este fisioterapeuta?')) {
+    await store.remove(id)
+    await store.fetch()
+  }
 }
 
 const handleCancel = () => {

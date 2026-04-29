@@ -110,7 +110,7 @@ export default {
         resetForm()
       } catch (error) {
         console.error('Error saving fisio:', error)
-        alert('Error al guardar. Por favor intenta de nuevo.')
+        alert('Error al guardar: ' + (error.response?.data?.error || error.message))
       } finally {
         loading.value = false
       }

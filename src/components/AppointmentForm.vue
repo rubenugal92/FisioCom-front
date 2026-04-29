@@ -217,9 +217,14 @@ export default {
 
     const handleDelete = async () => {
       if (!props.appointment) return
-      await deleteAppointmentAPI(props.appointment.id)
-      emit('delete', props.appointment.id)
-      resetForm()
+      try {
+        await deleteAppointmentAPI(props.appointment.id)
+        emit('delete', props.appointment.id)
+        resetForm()
+      } catch (e) {
+        console.error(e)
+        alert('Error: ' + (e.response?.data?.error || e.message))
+      }
     }
 
     watch(() => props.appointment, (a) => {
