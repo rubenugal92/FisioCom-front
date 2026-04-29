@@ -4,8 +4,11 @@ import './styles/main.css'
 import { createPinia } from 'pinia'
 import router from './router'
 
-
 const app = createApp(App)
 app.use(createPinia())
 app.use(router)
-app.mount('#app')
+
+// Esperar a que el router esté listo antes de montar
+router.isReady().then(() => {
+  app.mount('#app')
+})

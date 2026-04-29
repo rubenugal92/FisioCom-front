@@ -37,6 +37,8 @@ router.beforeEach((to) => {
   if (to.path === '/login' && auth.isAuthenticated) {
     return '/citas'
   }
+
+  return true
 })
 
 export default router
