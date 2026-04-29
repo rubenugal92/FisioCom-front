@@ -53,12 +53,14 @@
 
 <script>
 import { ref } from 'vue'
+import { useAuthStore } from '../stores/auth'
 import { login, register } from '../api/appointments.js'
 
 export default {
   name: 'Login',
   emits: ['login-success'],
   setup(_, { emit }) {
+    const auth = useAuthStore()
     const form = ref({
       email: '',
       password: '',
@@ -91,7 +93,8 @@ export default {
           form.value = { email: form.value.email, password: '', username: '' }
           error.value = ''
         } else {
-          await login(form.value.email, form.value.password)
+          const data = await login(form.value.email, form.value.password)
+          auth.login(data.token)
           emit('login-success')
         }
       } catch (err) {

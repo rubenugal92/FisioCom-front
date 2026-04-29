@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useAppointmentsStore } from '../stores/appointments'
 
 import Calendar from '../components/Calendar.vue'
@@ -31,6 +31,10 @@ import AppointmentForm from '../components/AppointmentForm.vue'
 
 const store = useAppointmentsStore()
 const selectedDate = ref(null)
+
+onMounted(() => {
+  store.load()
+})
 
 const onDateSelected = (date) => {
   selectedDate.value = date

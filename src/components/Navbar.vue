@@ -42,9 +42,11 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { getUser, logout } from '../api/appointments.js'
+import { useAuthStore } from '../stores/auth'
 
 const router = useRouter()
 const route = useRoute()
+const auth = useAuthStore()
 
 const user = ref(null)
 
@@ -54,6 +56,7 @@ const go = (path) => {
 
 const handleLogout = () => {
   logout()
+  auth.logout()
   router.push('/login')
 }
 
