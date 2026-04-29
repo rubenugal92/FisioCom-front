@@ -57,13 +57,12 @@ export const isAuthenticated = () => !!getToken()
 
 // ===================== APPOINTMENTS =====================
 
-// 🔥 FIX IMPORT ERROR (ESTO ES LO QUE TE FALTABA)
-export const getAppointments = getAllAppointments
-
 export const getAllAppointments = async () => {
   const { data } = await api.get('/appointments')
   return data
 }
+
+export const getAppointments = getAllAppointments
 
 export const getAppointmentById = async (id) => {
   const { data } = await api.get(`/appointments/${id}`)
