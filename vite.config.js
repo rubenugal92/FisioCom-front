@@ -11,10 +11,16 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path
       }
-    }
+    },
+    middlewareMode: false
+  },
+  preview: {
+    port: 4173
   },
   build: {
     outDir: 'dist',
     sourcemap: true
   }
 })
+
+
