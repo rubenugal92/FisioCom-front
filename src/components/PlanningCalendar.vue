@@ -1,66 +1,97 @@
 <template>
   <div class="planning-container">
-    <div class="planning-header">
-      <button @click="previousMonth" class="nav-btn">⬅️</button>
-      <h2>{{ monthYear }}</h2>
-      <button @click="nextMonth" class="nav-btn">➡️</button>
+    <!-- PANEL DE EDICIÓN PARA ADMINS (arriba) -->
+    <div v-if="isAdmin" class="admin-panel">
+      <h3>✏️ Editar Planning</h3>
+      <div class="edit-form">
+        <div class="form-group">
+          <label>Fecha:</label>
+          <input v-model="selectedDate" type="date" class="date-input">
+        </div>
+        <div class="form-group">
+          <label>Estado:</label>
+          <select v-model="selectedType" class="type-select">
+            <option value="">-- Selecciona estado --</option>
+            <option value="work">✓ Trabaja</option>
+            <option value="vacation">🏖️ Vacaciones</option>
+            <option value="sick">🏥 Baja médica</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Notas:</label>
+          <textarea v-model="selectedNotes" placeholder="Ej: Operación, curso de capacitación..." class="notes-input"></textarea>
+        </div>
+        <div class="form-actions">
+          <button @click="savePlanning" class="btn btn-primary" :disabled="!selectedDate || !selectedType">
+            💾 Guardar
+          </button>
+          <button v-if="existingPlanning" @click="deletePlanningEntry" class="btn btn-danger">
+            🗑️ Eliminar
+          </button>
+        </div>
+        <p v-if="selectedDate" class="form-hint">
+          Fecha seleccionada: {{ formatDate(selectedDate) }}
+        </p>
+      </div>
     </div>
 
-    <div class="calendar-grid">
-      <div class="day-header" v-for="day in weekDays" :key="day">
-        {{ day }}
+    <!-- CALENDARIO -->
+    <div class="calendar-wrapper">
+      <div class="calendar-controls">
+        <button @click="previousMonth" class="nav-btn">⬅️ Anterior</button>
+        <h2 class="calendar-title">{{ monthYear }}</h2>
+        <button @click="nextMonth" class="nav-btn">Siguiente ➡️</button>
       </div>
-      
-      <div 
-        v-for="date in calendarDays" 
-        :key="date.iso"
-        class="calendar-day"
-        :class="date.classes"
-        @click="selectDate(date)"
-      >
-        <span class="date-number">{{ date.day }}</span>
-        <div v-if="date.planning" class="planning-badge" :class="date.planning.type">
-          {{ planningLabel[date.planning.type] }}
+
+      <div class="calendar-grid">
+        <div class="day-header" v-for="day in weekDays" :key="day">
+          {{ day }}
+        </div>
+        
+        <div 
+          v-for="date in calendarDays" 
+          :key="date.iso"
+          class="calendar-day"
+          :class="[date.classes, isAdmin ? 'clickable' : '']"
+          @click="selectDate(date)"
+        >
+          <span class="date-number">{{ date.day }}</span>
+          <div v-if="date.planning" class="planning-badge" :class="date.planning.type">
+            {{ planningLabel[date.planning.type] }}
+          </div>
+          <span v-else class="date-empty">-</span>
         </div>
       </div>
     </div>
 
-    <div class="planning-legend">
-      <div class="legend-item">
-        <span class="badge work">W</span> Trabaja
-      </div>
-      <div class="legend-item">
-        <span class="badge vacation">V</span> Vacaciones
-      </div>
-      <div class="legend-item">
-        <span class="badge sick">B</span> Baja
+    <!-- LEYENDA -->
+    <div class="legend-section">
+      <div class="legend-title">Leyenda:</div>
+      <div class="legend-items">
+        <div class="legend-item">
+          <span class="badge work">✓</span>
+          <span>Trabaja</span>
+        </div>
+        <div class="legend-item">
+          <span class="badge vacation">🏖️</span>
+          <span>Vacaciones</span>
+        </div>
+        <div class="legend-item">
+          <span class="badge sick">🏥</span>
+          <span>Baja médica</span>
+        </div>
       </div>
     </div>
 
-    <div v-if="isAdmin" class="admin-hint">
-      💡 Haz clic en una fecha para editar el planning
-    </div>
-
-    <!-- Admin view - botones de edición -->
-    <div v-if="isAdmin" class="admin-controls">
-      <div class="edit-section">
-        <input v-model="selectedDate" type="date" class="date-input">
-        <select v-model="selectedType" class="type-select">
-          <option value="">Selecciona tipo...</option>
-          <option value="work">Trabaja</option>
-          <option value="vacation">Vacaciones</option>
-          <option value="sick">Baja</option>
-        </select>
-        <textarea v-model="selectedNotes" placeholder="Notas (opcional)" class="notes-input"></textarea>
-        <button @click="savePlanning" class="btn btn-primary">Guardar</button>
-        <button v-if="existingPlanning" @click="deletePlanningEntry" class="btn btn-danger">Eliminar</button>
-      </div>
+    <!-- HINT PARA ADMINS -->
+    <div v-if="isAdmin && !selectedDate" class="admin-hint">
+      <strong>💡 Cómo usar:</strong> Completa los campos arriba (fecha y estado) o haz clic en una fecha del calendario para editarla.
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
 
 const props = defineProps({
@@ -111,6 +142,7 @@ const calendarDays = computed(() => {
     const iso = current.toISOString().split('T')[0]
     const dayPlanning = planning.value.find(p => p.date === iso)
     const isCurrentMonth = current.getMonth() === month
+    const isToday = iso === new Date().toISOString().split('T')[0]
     
     days.push({
       day: current.getDate(),
@@ -118,7 +150,8 @@ const calendarDays = computed(() => {
       planning: dayPlanning,
       classes: {
         'other-month': !isCurrentMonth,
-        'has-planning': !!dayPlanning
+        'has-planning': !!dayPlanning,
+        'is-today': isToday
       }
     })
     
@@ -127,6 +160,18 @@ const calendarDays = computed(() => {
   
   return days
 })
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return ''
+  const [year, month, day] = dateStr.split('-')
+  const date = new Date(year, parseInt(month) - 1, day)
+  return date.toLocaleDateString('es-ES', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
 
 const previousMonth = () => {
   currentDate.value.setMonth(currentDate.value.getMonth() - 1)
@@ -158,6 +203,8 @@ const fetchPlanning = async () => {
     
     if (response.ok) {
       planning.value = await response.json()
+    } else {
+      console.error('Error fetching planning:', response.status)
     }
   } catch (error) {
     console.error('Error fetching planning:', error)
@@ -165,7 +212,7 @@ const fetchPlanning = async () => {
 }
 
 const selectDate = (date) => {
-  if (!isAdmin.value) return
+  if (!isAdmin.value || date.classes['other-month']) return
   
   selectedDate.value = date.iso
   if (date.planning) {
@@ -203,23 +250,26 @@ const savePlanning = async () => {
     if (response.ok) {
       const saved = await response.json()
       existingPlanning.value = saved
+      alert('✅ Planning guardado correctamente')
       selectedDate.value = ''
       selectedType.value = ''
       selectedNotes.value = ''
       await fetchPlanning()
     } else {
       const error = await response.json()
-      alert('Error: ' + (error.error || 'No se pudo guardar el planning'))
+      alert('❌ Error: ' + (error.error || 'No se pudo guardar el planning'))
     }
   } catch (error) {
     console.error('Error:', error)
-    alert('Error guardando planning')
+    alert('❌ Error guardando planning')
   }
 }
 
 const deletePlanningEntry = async () => {
   if (!existingPlanning.value) return
   
+  if (!confirm('¿Seguro que quieres eliminar este planning?')) return
+
   try {
     const response = await fetch(`http://localhost:3000/api/planning/${existingPlanning.value.id}`, {
       method: 'DELETE',
@@ -229,16 +279,28 @@ const deletePlanningEntry = async () => {
     })
 
     if (response.ok) {
+      alert('✅ Planning eliminado correctamente')
       selectedDate.value = ''
       selectedType.value = ''
       selectedNotes.value = ''
       existingPlanning.value = null
       await fetchPlanning()
+    } else {
+      alert('❌ Error eliminando planning')
     }
   } catch (error) {
     console.error('Error:', error)
+    alert('❌ Error eliminando planning')
   }
 }
+
+watch(() => props.fisioId, () => {
+  fetchPlanning()
+})
+
+watch(currentDate, () => {
+  fetchPlanning()
+}, { deep: true })
 
 onMounted(() => {
   fetchPlanning()
@@ -247,37 +309,150 @@ onMounted(() => {
 
 <style scoped>
 .planning-container {
-  padding: 20px;
   background: white;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.planning-header {
+/* ADMIN PANEL */
+.admin-panel {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.admin-panel h3 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+}
+
+.edit-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 14px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.date-input,
+.type-select,
+.notes-input {
+  padding: 10px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.notes-input {
+  min-height: 60px;
+  resize: vertical;
+  grid-column: 1 / -1;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  grid-column: 1 / -1;
+  margin-top: 10px;
+}
+
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  flex: 1;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #fff;
+  color: #667eea;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-danger {
+  background: #ff4757;
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #ff3838;
+  transform: translateY(-2px);
+}
+
+.form-hint {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  font-size: 13px;
+  border-left: 3px solid white;
+}
+
+/* CALENDAR */
+.calendar-wrapper {
+  margin-bottom: 20px;
+}
+
+.calendar-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-}
-
-.planning-header h2 {
-  margin: 0;
-  min-width: 200px;
-  text-align: center;
+  gap: 15px;
 }
 
 .nav-btn {
   background: #007bff;
   color: white;
   border: none;
-  padding: 8px 12px;
+  padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
 }
 
 .nav-btn:hover {
   background: #0056b3;
+  transform: translateY(-1px);
+}
+
+.calendar-title {
+  margin: 0;
+  font-size: 20px;
+  color: #333;
+  min-width: 200px;
+  text-align: center;
 }
 
 .calendar-grid {
@@ -290,15 +465,17 @@ onMounted(() => {
 .day-header {
   font-weight: bold;
   text-align: center;
-  padding: 8px;
+  padding: 12px 8px;
   background: #f0f0f0;
   border-radius: 4px;
+  font-size: 13px;
+  color: #555;
 }
 
 .calendar-day {
   aspect-ratio: 1;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
   padding: 8px;
   display: flex;
   flex-direction: column;
@@ -306,79 +483,96 @@ onMounted(() => {
   justify-content: flex-start;
   position: relative;
   background: white;
-  min-height: 60px;
+  min-height: 70px;
   transition: all 0.2s ease;
+  font-size: 12px;
 }
 
-.calendar-day:hover {
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.calendar-day:not(.other-month) {
+.calendar-day.clickable:not(.other-month) {
   cursor: pointer;
 }
 
+.calendar-day.clickable:not(.other-month):hover {
+  border-color: #007bff;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+  background: #f0f7ff;
+  transform: translateY(-2px);
+}
+
 .calendar-day.other-month {
-  background: #f9f9f9;
-  color: #999;
+  background: #fafafa;
+  color: #ccc;
   cursor: default;
+  opacity: 0.5;
 }
 
 .calendar-day.has-planning {
-  border-color: #007bff;
-  background: #f0f7ff;
+  border-color: #28a745;
+  background: #f0fdf4;
+}
+
+.calendar-day.is-today {
+  border-color: #ffc107;
+  background: #fffbf0;
+  box-shadow: 0 0 0 1px #ffc107;
 }
 
 .date-number {
   font-weight: bold;
-  margin-bottom: 4px;
-  font-size: 14px;
+  font-size: 16px;
+  color: #333;
 }
 
 .planning-badge {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 24px;
+  margin-top: 4px;
 }
 
-.planning-badge.work {
-  color: #28a745;
+.date-empty {
+  color: #ccc;
+  font-size: 14px;
 }
 
-.planning-badge.vacation {
-  color: #ffc107;
+/* LEGEND */
+.legend-section {
+  background: #f8f9fa;
+  padding: 15px 20px;
+  border-radius: 6px;
+  margin-bottom: 15px;
 }
 
-.planning-badge.sick {
-  color: #dc3545;
+.legend-title {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 14px;
 }
 
-.planning-legend {
+.legend-items {
   display: flex;
   gap: 20px;
-  justify-content: center;
-  margin: 20px 0;
-  padding: 10px;
-  background: #f5f5f5;
-  border-radius: 4px;
+  flex-wrap: wrap;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 14px;
+  color: #555;
 }
 
 .badge {
   display: inline-block;
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-weight: bold;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .badge.work {
@@ -394,69 +588,14 @@ onMounted(() => {
   background: #dc3545;
 }
 
-.admin-controls {
-  margin-top: 30px;
-  padding: 20px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-}
-
-.edit-section {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-width: 400px;
-}
-
-.date-input,
-.type-select,
-.notes-input {
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.notes-input {
-  min-height: 60px;
-  resize: vertical;
-}
-
-.btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.btn-primary {
-  background: #007bff;
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #0056b3;
-}
-
-.btn-danger {
-  background: #dc3545;
-  color: white;
-}
-
-.btn-danger:hover {
-  background: #c82333;
-}
-
+/* HINT */
 .admin-hint {
-  text-align: center;
-  padding: 12px;
   background: #d4edff;
   border: 1px solid #b3d9ff;
   color: #0056b3;
+  padding: 12px 15px;
   border-radius: 4px;
-  margin: 15px 0;
   font-size: 14px;
+  border-left: 4px solid #0056b3;
 }
 </style>
