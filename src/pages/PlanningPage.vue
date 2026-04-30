@@ -62,6 +62,8 @@ const auth = useAuthStore()
 const selectedFisioId = ref('')
 const fisios = ref([])
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
 const isAdmin = computed(() => auth.user?.role === 'adminMid')
 
 const getSelectedFisioName = () => {
@@ -70,8 +72,9 @@ const getSelectedFisioName = () => {
 }
 
 const fetchFisios = async () => {
+    console.log("fetching fisios...")
   try {
-    const response = await fetch('http://localhost:3000/api/fisios', {
+    const response = await fetch(`${API_BASE_URL}/api/fisios`, {
       headers: {
         'Authorization': `Bearer ${auth.token}`
       }
