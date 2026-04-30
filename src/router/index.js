@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginPage from '../pages/LoginPage.vue'
 import AppointmentsPage from '../pages/AppointmentsPage.vue'
 import FisiosPage from '../pages/FisiosPage.vue'
+import PlanningPage from '../pages/PlanningPage.vue'
 import { useAuthStore } from '../stores/auth'
 
 const routes = [
@@ -18,6 +19,12 @@ const routes = [
   {
     path: '/fisios',
     component: FisiosPage,
+    meta: { requiresAuth: true }
+  },
+
+  {
+    path: '/planning',
+    component: PlanningPage,
     meta: { requiresAuth: true }
   }
 ]

@@ -22,6 +22,14 @@
         >
           👨‍⚕️ Fisios
         </button>
+
+        <button
+          class="nav-button"
+          :class="{ active: route.path === '/planning' }"
+          @click="go('/planning')"
+        >
+          📋 Planning
+        </button>
       </div>
 
       <div class="nav-user">
