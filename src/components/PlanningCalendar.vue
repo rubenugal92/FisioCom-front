@@ -110,7 +110,7 @@ const selectedDate = ref('')
 const selectedType = ref('')
 const selectedNotes = ref('')
 const existingPlanning = ref(null)
-
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 const weekDays = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
 const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 
@@ -193,7 +193,7 @@ const fetchPlanning = async () => {
     params.append('end_date', lastDay.toISOString().split('T')[0])
 
     const response = await fetch(
-      `http://localhost:3000/api/planning/fisio/${props.fisioId}?${params}`,
+      `${API_BASE_URL}/api/planning/fisio/${props.fisioId}?${params}`,
       {
         headers: {
           'Authorization': `Bearer ${auth.token}`
@@ -233,7 +233,7 @@ const savePlanning = async () => {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/api/planning', {
+    const response = await fetch(`${API_BASE_URL}/api/planning`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -271,7 +271,7 @@ const deletePlanningEntry = async () => {
   if (!confirm('¿Seguro que quieres eliminar este planning?')) return
 
   try {
-    const response = await fetch(`http://localhost:3000/api/planning/${existingPlanning.value.id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/planning/${existingPlanning.value.id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${auth.token}`
