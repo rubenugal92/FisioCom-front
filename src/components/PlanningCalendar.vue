@@ -16,6 +16,7 @@
         :key="date.iso"
         class="calendar-day"
         :class="date.classes"
+        @click="selectDate(date)"
       >
         <span class="date-number">{{ date.day }}</span>
         <div v-if="date.planning" class="planning-badge" :class="date.planning.type">
@@ -34,6 +35,10 @@
       <div class="legend-item">
         <span class="badge sick">B</span> Baja
       </div>
+    </div>
+
+    <div v-if="isAdmin" class="admin-hint">
+      💡 Haz clic en una fecha para editar el planning
     </div>
 
     <!-- Admin view - botones de edición -->
@@ -159,6 +164,21 @@ const fetchPlanning = async () => {
   }
 }
 
+const selectDate = (date) => {
+  if (!isAdmin.value) return
+  
+  selectedDate.value = date.iso
+  if (date.planning) {
+    selectedType.value = date.planning.type
+    selectedNotes.value = date.planning.notes || ''
+    existingPlanning.value = date.planning
+  } else {
+    selectedType.value = ''
+    selectedNotes.value = ''
+    existingPlanning.value = null
+  }
+}
+
 const savePlanning = async () => {
   if (!selectedDate.value || !selectedType.value) {
     alert('Selecciona fecha y tipo')
@@ -181,16 +201,19 @@ const savePlanning = async () => {
     })
 
     if (response.ok) {
+      const saved = await response.json()
+      existingPlanning.value = saved
       selectedDate.value = ''
       selectedType.value = ''
       selectedNotes.value = ''
-      existingPlanning.value = null
       await fetchPlanning()
     } else {
-      alert('Error guardando planning')
+      const error = await response.json()
+      alert('Error: ' + (error.error || 'No se pudo guardar el planning'))
     }
   } catch (error) {
     console.error('Error:', error)
+    alert('Error guardando planning')
   }
 }
 
@@ -284,15 +307,26 @@ onMounted(() => {
   position: relative;
   background: white;
   min-height: 60px;
+  transition: all 0.2s ease;
+}
+
+.calendar-day:hover {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.calendar-day:not(.other-month) {
+  cursor: pointer;
 }
 
 .calendar-day.other-month {
   background: #f9f9f9;
   color: #999;
+  cursor: default;
 }
 
 .calendar-day.has-planning {
   border-color: #007bff;
+  background: #f0f7ff;
 }
 
 .date-number {
@@ -413,5 +447,16 @@ onMounted(() => {
 
 .btn-danger:hover {
   background: #c82333;
+}
+
+.admin-hint {
+  text-align: center;
+  padding: 12px;
+  background: #d4edff;
+  border: 1px solid #b3d9ff;
+  color: #0056b3;
+  border-radius: 4px;
+  margin: 15px 0;
+  font-size: 14px;
 }
 </style>

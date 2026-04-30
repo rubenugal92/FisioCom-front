@@ -94,7 +94,7 @@ export default {
           error.value = ''
         } else {
           const data = await login(form.value.email, form.value.password)
-          auth.login(data.token)
+          auth.login(data.token, data.user)
           emit('login-success')
         }
       } catch (err) {

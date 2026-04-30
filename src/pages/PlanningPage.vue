@@ -4,9 +4,9 @@
       <h1>📅 Planning</h1>
 
       <!-- Vista para fisios (solo su propio planning) -->
-      <div v-if="!isAdmin && fisioId" class="content">
+      <div v-if="!isAdmin" class="content">
         <p class="subtitle">Tu planning</p>
-        <PlanningCalendar :fisio-id="fisioId" />
+        <PlanningCalendar :fisio-id="auth.user?.id" />
       </div>
 
       <!-- Vista para admin (todos los fisios) -->
@@ -15,7 +15,7 @@
           <div class="fisio-selector">
             <label>Selecciona un fisio:</label>
             <select v-model="selectedFisioId" class="select">
-              <option value="">Ver todos</option>
+              <option value="">Ver todos los fisios</option>
               <option v-for="fisio in fisios" :key="fisio.id" :value="fisio.id">
                 {{ fisio.name }}
               </option>
@@ -29,7 +29,7 @@
           <div v-else class="all-planning-grid">
             <div v-for="fisio in fisios" :key="fisio.id" class="fisio-planning-card">
               <h3>{{ fisio.name }}</h3>
-              <PlanningCalendar :fisio-id="fisio.id" />
+              <PlanningCalendar :fisio-id="fisio.id" :key="`all-${fisio.id}`" />
             </div>
           </div>
         </div>
@@ -53,7 +53,6 @@ const selectedFisioId = ref('')
 const fisios = ref([])
 
 const isAdmin = computed(() => auth.user?.role === 'adminMid')
-const fisioId = computed(() => auth.user?.id)
 
 const fetchFisios = async () => {
   try {
