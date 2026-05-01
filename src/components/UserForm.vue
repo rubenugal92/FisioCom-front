@@ -14,6 +14,17 @@
         />
       </div>
 
+       <div class="form-group">
+        <label>Nombre</label>
+        <input 
+          v-model="form.name"
+          type="text"
+          placeholder="Ej: Juan García"
+          required
+          :disabled="loading"
+        />
+      </div>
+
       <div class="form-group">
         <label>Email</label>
         <input 
@@ -108,6 +119,7 @@ export default {
       email: '',
       password: '',
       username: '',
+      name: '',
       specialties: '',
       phone: '',
       type: ''
@@ -145,6 +157,7 @@ export default {
     const resetForm = () => {
       form.value = {
         username: '',
+        name: '',
         email: '',
         password: '',
         phone: '',
@@ -162,6 +175,7 @@ export default {
       } else {
         form.value = {
           username: '',
+          name: '',
           email: '',
           password: '',
           phone: '',
