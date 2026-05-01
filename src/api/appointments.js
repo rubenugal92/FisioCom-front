@@ -129,11 +129,6 @@ export const deleteUser = async (id) => {
   return data
 }
 
-// Legacy aliases for backward compatibility
-export const getAllUsers = getAllUsers
-export const getUserById = getUserById
-export const createUser = createUser
-export const updateUser = updateUser
-export const deleteUser = deleteUser
+
 
 export default api
