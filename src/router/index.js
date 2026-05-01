@@ -45,8 +45,11 @@ router.beforeEach((to) => {
     return '/calendario'
   }
 
-  if (to.meta.roles && !to.meta.roles.includes(auth.user?.role)) {
-    return '/calendario'
+  // Si la ruta requiere roles y el usuario está autenticado, validar
+  if (to.meta.roles && auth.isAuthenticated && auth.user?.role) {
+    if (!to.meta.roles.includes(auth.user.role)) {
+      return '/calendario'
+    }
   }
 
   return true

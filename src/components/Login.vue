@@ -99,8 +99,11 @@ export default {
           console.log('Llamando login API...')
           const data = await login(form.value.email, form.value.password)
           console.log('Login API respondió:', data)
+          console.log('User object:', data.user)
+          console.log('User role:', data.user?.role)
           auth.login(data.token, data.user)
           console.log('Auth actualizado, redirigiendo...')
+          console.log('Auth state:', auth.isAuthenticated, auth.user)
           await router.push('/calendario')
           console.log('Redirigido a calendario')
         }
