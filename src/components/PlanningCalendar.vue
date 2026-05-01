@@ -303,6 +303,9 @@ watch(currentDate, () => {
 }, { deep: true })
 
 onMounted(() => {
+  console.log('PlanningCalendar mounted')
+  console.log('Auth user:', auth.user)
+  console.log('Is Admin:', isAdmin.value)
   fetchPlanning()
 })
 </script>

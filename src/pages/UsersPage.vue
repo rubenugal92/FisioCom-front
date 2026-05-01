@@ -3,7 +3,7 @@
     <div class="page-header">
       <div>
         <h2>Usuarios</h2>
-        <p>Lista y gestión de usuarios (fisioterapeutas)</p>
+        <p>Gestión de usuarios del sistema</p>
       </div>
 
       <button 
@@ -16,7 +16,7 @@
     </div>
 
     <!-- FORMULARIO -->
-    <FisioForm
+    <UserForm
       v-if="showForm"
       :editing="editingUser"
       @save="handleSave"
@@ -32,8 +32,11 @@
       <div v-for="user in store.items" :key="user.id" class="user-card">
         <div class="user-details">
           <h3>{{ user.name }}</h3>
+          <p class="user-type" :class="user.type">
+            {{ user.type === 'fisio' ? '👨‍⚕️ Fisioterapeuta' : '⚙️ ' + user.type }}
+          </p>
           <p class="user-specialty">
-            {{ user.specialties || 'Especialidad no disponible' }}
+            {{ user.specialties || 'Sin especialidad' }}
           </p>
           <p class="user-info">
             <strong>Email:</strong> {{ user.email }}
@@ -45,7 +48,10 @@
             <strong>Licencia:</strong> {{ user.license }}
           </p>
           <p class="user-role">
-            <strong>Rol:</strong> {{ user.role === 'admin' ? 'Administrador' : 'Usuario' }}
+            <strong>Rol:</strong> 
+            <span :class="user.role">
+              {{ user.role === 'admin' ? 'Administrador' : 'Usuario' }}
+            </span>
           </p>
         </div>
 
@@ -71,7 +77,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useUsersStore } from '../stores/users'
-import FisioForm from '../components/FisioForm.vue'
+import UserForm from '../components/UserForm.vue'
 
 const store = useUsersStore()
 const showForm = ref(false)
@@ -106,17 +112,25 @@ const handleCancel = () => {
 </script>
 
 <style scoped>
+.page-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
 .page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   flex-wrap: wrap;
 }
 
 .page-header div h2 {
   margin: 0 0 0.25rem 0;
+  font-size: 1.75rem;
+  color: #1f2937;
 }
 
 .page-header div p {
@@ -127,24 +141,24 @@ const handleCancel = () => {
 
 .users-grid {
   display: grid;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .user-card {
   background: white;
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 1.5rem;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+  gap: 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   border: 1px solid #e5e7eb;
-  transition: box-shadow 0.3s, border-color 0.3s;
+  transition: all 0.3s;
 }
 
 .user-card:hover {
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   border-color: #d1d5db;
 }
 
@@ -154,8 +168,18 @@ const handleCancel = () => {
 
 .user-details h3 {
   margin: 0 0 0.5rem 0;
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   color: #1f2937;
+}
+
+.user-type {
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.user-type.fisio {
+  color: #dc2626;
 }
 
 .user-specialty {
@@ -172,23 +196,37 @@ const handleCancel = () => {
 }
 
 .user-role {
-  margin: 0.5rem 0 0 0;
-  padding-top: 0.5rem;
+  margin: 0.75rem 0 0 0;
+  padding-top: 0.75rem;
   border-top: 1px solid #e5e7eb;
   color: #6b7280;
   font-size: 0.9rem;
 }
 
+.user-role span {
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.user-role span.admin {
+  color: #dc2626;
+}
+
+.user-role span.user {
+  color: #059669;
+}
+
 .user-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
   flex-wrap: wrap;
   justify-content: flex-end;
+  align-items: flex-start;
 }
 
 .empty-state {
   text-align: center;
-  padding: 3rem 1rem;
+  padding: 4rem 2rem;
   color: #6b7280;
   background: #f9fafb;
   border-radius: 12px;
@@ -201,8 +239,9 @@ const handleCancel = () => {
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s;
-  font-size: 0.95rem;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .btn-primary {
@@ -232,7 +271,7 @@ const handleCancel = () => {
   background: #fecaca;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .page-header {
     flex-direction: column;
     align-items: stretch;
@@ -244,10 +283,16 @@ const handleCancel = () => {
 
   .user-card {
     flex-direction: column;
+    gap: 1rem;
   }
 
   .user-actions {
     justify-content: flex-start;
+    width: 100%;
+  }
+
+  .user-actions .btn {
+    flex: 1;
   }
 }
 </style>
