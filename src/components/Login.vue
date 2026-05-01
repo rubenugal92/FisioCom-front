@@ -53,13 +53,14 @@
 
 <script>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { login, register } from '../api/appointments.js'
 
 export default {
   name: 'Login',
-  emits: ['login-success'],
-  setup(_, { emit }) {
+  setup() {
+    const router = useRouter()
     const auth = useAuthStore()
     const form = ref({
       email: '',
@@ -95,7 +96,7 @@ export default {
         } else {
           const data = await login(form.value.email, form.value.password)
           auth.login(data.token, data.user)
-          emit('login-success')
+          router.push('/calendario')
         }
       } catch (err) {
         error.value = err.response?.data?.error || 'Error en la solicitud. Intenta de nuevo.'
