@@ -16,7 +16,7 @@ watch(
   () => auth.isAuthenticated,
   (isAuth) => {
     if (isAuth) {
-      router.push('/citas')
+      router.push('/calendario')
     }
   }
 )

@@ -1,31 +1,31 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginPage from '../pages/LoginPage.vue'
 import AppointmentsPage from '../pages/AppointmentsPage.vue'
-import FisiosPage from '../pages/FisiosPage.vue'
+import UsersPage from '../pages/UsersPage.vue'
 import PlanningPage from '../pages/PlanningPage.vue'
 import { useAuthStore } from '../stores/auth'
 
 const routes = [
   { path: '/login', component: LoginPage },
 
-  { path: '/', redirect: '/citas' },
+  { path: '/', redirect: '/calendario' },
 
   {
-    path: '/citas',
+    path: '/calendario',
     component: AppointmentsPage,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, roles: ['user', 'admin'] }
   },
 
   {
-    path: '/fisios',
-    component: FisiosPage,
-    meta: { requiresAuth: true }
+    path: '/usuarios',
+    component: UsersPage,
+    meta: { requiresAuth: true, roles: ['admin'] }
   },
 
   {
     path: '/planning',
     component: PlanningPage,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, roles: ['user', 'admin'] }
   }
 ]
 
@@ -42,7 +42,11 @@ router.beforeEach((to) => {
   }
 
   if (to.path === '/login' && auth.isAuthenticated) {
-    return '/citas'
+    return '/calendario'
+  }
+
+  if (to.meta.roles && !to.meta.roles.includes(auth.user?.role)) {
+    return '/calendario'
   }
 
   return true

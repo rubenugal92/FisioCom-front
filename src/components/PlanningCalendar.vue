@@ -102,7 +102,7 @@ const props = defineProps({
 })
 
 const auth = useAuthStore()
-const isAdmin = computed(() => auth.user?.role === 'adminMid')
+const isAdmin = computed(() => auth.user?.role === 'admin')
 
 const currentDate = ref(new Date())
 const planning = ref([])

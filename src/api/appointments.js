@@ -99,30 +99,37 @@ export const deleteAppointment = async (id) => {
   return data
 }
 
-// ===================== FISIOS =====================
-export const getAllFisios = async () => {
-  const { data } = await api.get('/fisios')
+// ===================== USERS =====================
+export const getAllUsers = async () => {
+  const { data } = await api.get('/users')
   return data
 }
 
-export const getFisioById = async (id) => {
-  const { data } = await api.get(`/fisios/${id}`)
+export const getUserById = async (id) => {
+  const { data } = await api.get(`/users/${id}`)
   return data
 }
 
-export const createFisio = async (fisioData) => {
-  const { data } = await api.post('/fisios', fisioData)
+export const createUser = async (userData) => {
+  const { data } = await api.post('/users', userData)
   return data
 }
 
-export const updateFisio = async (id, fisioData) => {
-  const { data } = await api.put(`/fisios/${id}`, fisioData)
+export const updateUser = async (id, userData) => {
+  const { data } = await api.put(`/users/${id}`, userData)
   return data
 }
 
-export const deleteFisio = async (id) => {
-  const { data } = await api.delete(`/fisios/${id}`)
+export const deleteUser = async (id) => {
+  const { data } = await api.delete(`/users/${id}`)
   return data
 }
+
+// Legacy aliases for backward compatibility
+export const getAllFisios = getAllUsers
+export const getFisioById = getUserById
+export const createFisio = createUser
+export const updateFisio = updateUser
+export const deleteFisio = deleteUser
 
 export default api

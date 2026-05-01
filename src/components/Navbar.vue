@@ -9,18 +9,19 @@
       <div class="nav-menu">
         <button
           class="nav-button"
-          :class="{ active: route.path === '/citas' }"
-          @click="go('/citas')"
+          :class="{ active: route.path === '/calendario' }"
+          @click="go('/calendario')"
         >
-          📅 Citas
+          📅 Calendario
         </button>
 
         <button
+          v-if="isAdmin"
           class="nav-button"
-          :class="{ active: route.path === '/fisios' }"
-          @click="go('/fisios')"
+          :class="{ active: route.path === '/usuarios' }"
+          @click="go('/usuarios')"
         >
-          👨‍⚕️ Fisios
+          👥 Usuarios
         </button>
 
         <button
@@ -34,7 +35,7 @@
 
       <div class="nav-user">
         <span class="user-name">
-          {{ user?.username || 'Usuario' }}
+          {{ user?.username || 'Usuario' }} ({{ user?.role === 'admin' ? 'Admin' : 'User' }})
         </span>
 
         <button class="btn btn-logout" @click="handleLogout">
@@ -47,7 +48,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { getUser, logout } from '../api/appointments.js'
 import { useAuthStore } from '../stores/auth'
@@ -57,6 +58,7 @@ const route = useRoute()
 const auth = useAuthStore()
 
 const user = ref(null)
+const isAdmin = computed(() => auth.user?.role === 'admin')
 
 const go = (path) => {
   router.push(path)

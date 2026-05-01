@@ -1,47 +1,47 @@
 <template>
   <div class="planning-page">
     <div class="page-header">
-      <h1>📅 Planning de Fisioterapeutas</h1>
+      <h1>📅 Planning</h1>
       <p class="subtitle">Gestiona el calendario de trabajos, vacaciones y bajas</p>
     </div>
 
-    <!-- Vista para fisios (solo su propio planning) -->
+    <!-- Vista para usuarios (solo su propio planning) -->
     <div v-if="!isAdmin" class="content">
-      <div class="fisio-planning">
+      <div class="user-planning">
         <h2>Tu Planning</h2>
         <PlanningCalendar :fisio-id="auth.user?.id" />
       </div>
     </div>
 
-    <!-- Vista para admin (todos los fisios) -->
+    <!-- Vista para admin (todos los usuarios) -->
     <div v-else-if="isAdmin" class="content">
       <div class="admin-view">
         <div class="controls-section">
           <div class="selector-wrapper">
-            <h2>Selecciona un Fisioterapeuta</h2>
-            <select v-model="selectedFisioId" class="fisio-select">
-              <option value="">📊 Ver todos los fisioterapeutas</option>
-              <option v-for="fisio in fisios" :key="fisio.id" :value="String(fisio.id)">
-                {{ fisio.name }}
+            <h2>Selecciona un Usuario</h2>
+            <select v-model="selectedUserId" class="user-select">
+              <option value="">📊 Ver todos los usuarios</option>
+              <option v-for="user in users" :key="user.id" :value="String(user.id)">
+                {{ user.name }}
               </option>
             </select>
           </div>
         </div>
 
-        <!-- Vista individual de un fisio -->
-        <div v-if="selectedFisioId" class="selected-planning-wrapper">
-          <div class="fisio-header">
-            <h3>{{ getSelectedFisioName() }}</h3>
-            <button @click="selectedFisioId = ''" class="btn btn-secondary">Volver a ver todos</button>
+        <!-- Vista individual de un usuario -->
+        <div v-if="selectedUserId" class="selected-planning-wrapper">
+          <div class="user-header">
+            <h3>{{ getSelectedUserName() }}</h3>
+            <button @click="selectedUserId = ''" class="btn btn-secondary">Volver a ver todos</button>
           </div>
-          <PlanningCalendar :fisio-id="selectedFisioId" :key="selectedFisioId" />
+          <PlanningCalendar :fisio-id="selectedUserId" :key="selectedUserId" />
         </div>
 
-        <!-- Vista grid de todos los fisios -->
+        <!-- Vista grid de todos los usuarios -->
         <div v-else class="all-planning-grid">
-          <div v-for="fisio in fisios" :key="fisio.id" class="fisio-planning-card">
-            <h3>{{ fisio.name }}</h3>
-            <PlanningCalendar :fisio-id="fisio.id" :key="`all-${fisio.id}`" />
+          <div v-for="user in users" :key="user.id" class="user-planning-card">
+            <h3>{{ user.name }}</h3>
+            <PlanningCalendar :fisio-id="user.id" :key="`all-${user.id}`" />
           </div>
         </div>
       </div>
@@ -59,38 +59,38 @@ import { useAuthStore } from '../stores/auth'
 import PlanningCalendar from '../components/PlanningCalendar.vue'
 
 const auth = useAuthStore()
-const selectedFisioId = ref('')
-const fisios = ref([])
+const selectedUserId = ref('')
+const users = ref([])
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
-const isAdmin = computed(() => auth.user?.role === 'adminMid')
+const isAdmin = computed(() => auth.user?.role === 'admin')
 
-const getSelectedFisioName = () => {
-  const fisio = fisios.value.find(f => String(f.id) === selectedFisioId.value)
-  return fisio?.name || 'Desconocido'
+const getSelectedUserName = () => {
+  const user = users.value.find(u => String(u.id) === selectedUserId.value)
+  return user?.name || 'Desconocido'
 }
 
-const fetchFisios = async () => {
-    console.log("fetching fisios...")
+const fetchUsers = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/fisios`, {
+    const response = await fetch(`${API_BASE_URL}/api/users`, {
       headers: {
         'Authorization': `Bearer ${auth.token}`
       }
     })
 
     if (response.ok) {
-      fisios.value = await response.json()
+      const data = await response.json()
+      users.value = data.filter(u => u.role === 'user')
     }
   } catch (error) {
-    console.error('Error fetching fisios:', error)
+    console.error('Error fetching users:', error)
   }
 }
 
 onMounted(() => {
   if (isAdmin.value) {
-    fetchFisios()
+    fetchUsers()
   }
 })
 </script>
@@ -125,12 +125,12 @@ onMounted(() => {
   padding: 20px;
 }
 
-.fisio-planning {
+.user-planning {
   max-width: 900px;
   margin: 0 auto;
 }
 
-.fisio-planning h2 {
+.user-planning h2 {
   margin-top: 0;
   color: #333;
 }
@@ -160,7 +160,7 @@ onMounted(() => {
   color: #333;
 }
 
-.fisio-select {
+.user-select {
   padding: 10px 12px;
   border: 2px solid #ddd;
   border-radius: 6px;
@@ -187,7 +187,7 @@ onMounted(() => {
   border: 1px solid #ddd;
 }
 
-.fisio-header {
+.user-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -221,7 +221,7 @@ onMounted(() => {
   gap: 20px;
 }
 
-.fisio-planning-card {
+.user-planning-card {
   background: white;
   border-radius: 8px;
   padding: 20px;
@@ -229,7 +229,7 @@ onMounted(() => {
   border: 1px solid #e0e0e0;
 }
 
-.fisio-planning-card h3 {
+.user-planning-card h3 {
   margin-top: 0;
   color: #333;
   border-bottom: 2px solid #007bff;

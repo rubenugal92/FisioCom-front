@@ -118,7 +118,7 @@
 
 <script>
 import { ref, computed, watch, onMounted } from 'vue'
-import { createAppointment, updateAppointment as updateAppointmentAPI, deleteAppointment as deleteAppointmentAPI, getAvailableSlots, getAllFisios } from '../api/appointments.js'
+import { createAppointment, updateAppointment as updateAppointmentAPI, deleteAppointment as deleteAppointmentAPI, getAvailableSlots, getAllUsers } from '../api/appointments.js'
 
 export default {
   name: 'AppointmentForm',
@@ -147,9 +147,9 @@ export default {
 
     const loadFisios = async () => {
       try {
-        fisios.value = await getAllFisios()
+        fisios.value = await getAllUsers()
       } catch (e) {
-        console.error('Error loading fisios:', e)
+        console.error('Error loading users:', e)
         fisios.value = []
       }
     }

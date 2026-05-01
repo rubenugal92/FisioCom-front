@@ -75,7 +75,7 @@
 
 <script>
 import { ref, computed, watch } from 'vue'
-import { createFisio, updateFisio } from '../api/appointments.js'
+import { createUser, updateUser } from '../api/appointments.js'
 
 export default {
   name: 'FisioForm',
@@ -101,15 +101,15 @@ export default {
         loading.value = true
 
         if (isEditing.value) {
-          await updateFisio(props.editing.id, form.value)
+          await updateUser(props.editing.id, form.value)
         } else {
-          await createFisio(form.value)
+          await createUser(form.value)
         }
 
         emit('save')
         resetForm()
       } catch (error) {
-        console.error('Error saving fisio:', error)
+        console.error('Error saving user:', error)
         alert('Error al guardar: ' + (error.response?.data?.error || error.message))
       } finally {
         loading.value = false
