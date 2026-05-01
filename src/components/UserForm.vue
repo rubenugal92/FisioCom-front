@@ -74,17 +74,6 @@
         </select>
       </div>
 
-      <div v-if="!isEditing" class="form-group">
-        <label>Contraseña</label>
-        <input 
-          v-model="form.password"
-          type="password"
-          placeholder="••••••••"
-          required
-          :disabled="loading"
-        />
-      </div>
-
       <div class="form-actions">
         <button type="submit" class="btn btn-primary" :disabled="loading">
           {{ loading ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear') }}
@@ -121,7 +110,6 @@ export default {
       password: '',
       phone: '',
       specialties: '',
-      license: '',
       type: 'fisio',
       role: 'user',
       password: ''
@@ -163,7 +151,6 @@ export default {
         password: '',
         phone: '',
         specialties: '',
-        license: '',
         type: 'fisio',
         role: 'user',
         password: ''
@@ -181,7 +168,6 @@ export default {
           password: '',
           phone: '',
           specialties: '',
-          license: '',
           type: 'fisio',
           role: 'user',
           password: ''
