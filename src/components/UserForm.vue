@@ -141,7 +141,15 @@ export default {
         if (isEditing.value) {
           await updateUser(props.editing.id, data)
         } else {
-          await register(data)
+          await register(
+                data.username,
+                data.name,
+                data.email,
+                data.password,
+                data.specialties, 
+                data.phone,
+                data.type
+                )
         }
 
         emit('save')
