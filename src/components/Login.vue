@@ -82,24 +82,31 @@ export default {
       try {
         error.value = ''
         loading.value = true
+        console.log('Login iniciado...')
 
         if (isRegister.value) {
           if (!form.value.username) {
             error.value = 'Por favor ingresa un nombre de usuario'
             return
           }
+          console.log('Registrando...')
           await register(form.value.username, form.value.email, form.value.password)
           error.value = ''
           isRegister.value = false
           form.value = { email: form.value.email, password: '', username: '' }
           error.value = ''
         } else {
+          console.log('Llamando login API...')
           const data = await login(form.value.email, form.value.password)
+          console.log('Login API respondió:', data)
           auth.login(data.token, data.user)
-          router.push('/calendario')
+          console.log('Auth actualizado, redirigiendo...')
+          await router.push('/calendario')
+          console.log('Redirigido a calendario')
         }
       } catch (err) {
-        error.value = err.response?.data?.error || 'Error en la solicitud. Intenta de nuevo.'
+        console.error('Error en login:', err)
+        error.value = err.response?.data?.error || err.message || 'Error en la solicitud. Intenta de nuevo.'
       } finally {
         loading.value = false
       }
