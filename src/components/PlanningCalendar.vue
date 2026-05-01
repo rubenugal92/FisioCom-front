@@ -138,11 +138,16 @@ const calendarDays = computed(() => {
   const days = []
   const current = new Date(startDate)
   
-  while (current <= lastDay || days.length % 7 !== 0) {
-    const iso = current.toISOString().split('T')[0]
-    const dayPlanning = planning.value.find(p => p.date === iso)
+  const endDate = new Date(lastDay)
+endDate.setDate(endDate.getDate() + (6 - lastDay.getDay()))
+
+while (current <= endDate) {
+   const iso = current.toLocaleDateString('en-CA')
+    const dayPlanning = planning.value.find(
+  p => p.date.split('T')[0] === iso
+)
     const isCurrentMonth = current.getMonth() === month
-    const isToday = iso === new Date().toISOString().split('T')[0]
+    const isToday = iso === new Date().toLocaleDateString('en-CA')
     
     days.push({
       day: current.getDate(),
