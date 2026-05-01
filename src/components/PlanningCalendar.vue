@@ -1,13 +1,31 @@
 <template>
   <div class="planning-container">
-    <!-- PANEL DE EDICIÓN PARA ADMINS (arriba) -->
+
+    <!-- 🔍 USER SELECTOR (solo admin) -->
+    <div v-if="isAdmin" class="user-selector">
+      <input
+        v-model="userSearch"
+        placeholder="Buscar usuario..."
+        class="search-input"
+      />
+
+      <select v-model="selectedUserId" class="user-select">
+        <option v-for="u in filteredUsers" :key="u.id" :value="u.id">
+          {{ u.name }}
+        </option>
+      </select>
+    </div>
+
+    <!-- ✏️ ADMIN PANEL -->
     <div v-if="isAdmin" class="admin-panel">
       <h3>✏️ Editar Planning</h3>
+
       <div class="edit-form">
         <div class="form-group">
           <label>Fecha:</label>
-          <input v-model="selectedDate" type="date" class="date-input">
+          <input v-model="selectedDate" type="date" class="date-input" />
         </div>
+
         <div class="form-group">
           <label>Estado:</label>
           <select v-model="selectedType" class="type-select">
@@ -17,76 +35,71 @@
             <option value="sick">🏥 Baja médica</option>
           </select>
         </div>
+
         <div class="form-group">
           <label>Notas:</label>
-          <textarea v-model="selectedNotes" placeholder="Ej: Operación, curso de capacitación..." class="notes-input"></textarea>
+          <textarea v-model="selectedNotes" class="notes-input" />
         </div>
+
         <div class="form-actions">
           <button @click="savePlanning" class="btn btn-primary" :disabled="!selectedDate || !selectedType">
             💾 Guardar
           </button>
+
           <button v-if="existingPlanning" @click="deletePlanningEntry" class="btn btn-danger">
             🗑️ Eliminar
           </button>
         </div>
-        <p v-if="selectedDate" class="form-hint">
-          Fecha seleccionada: {{ formatDate(selectedDate) }}
-        </p>
       </div>
     </div>
 
-    <!-- CALENDARIO -->
+    <!-- 📅 CALENDARIO -->
     <div class="calendar-wrapper">
       <div class="calendar-controls">
-        <button @click="previousMonth" class="nav-btn">⬅️ Anterior</button>
-        <h2 class="calendar-title">{{ monthYear }}</h2>
-        <button @click="nextMonth" class="nav-btn">Siguiente ➡️</button>
+        <button @click="previousMonth" class="nav-btn">⬅️</button>
+        <h2>{{ monthYear }}</h2>
+        <button @click="nextMonth" class="nav-btn">➡️</button>
       </div>
 
       <div class="calendar-grid">
-        <div class="day-header" v-for="day in weekDays" :key="day">
-          {{ day }}
+        <div v-for="d in weekDays" :key="d" class="day-header">
+          {{ d }}
         </div>
-        
-        <div 
-          v-for="date in calendarDays" 
+
+        <div
+          v-for="date in calendarDays"
           :key="date.iso"
           class="calendar-day"
-          :class="[date.classes, isAdmin ? 'clickable' : '']"
+          :class="date.classes"
           @click="selectDate(date)"
         >
           <span class="date-number">{{ date.day }}</span>
-          <div v-if="date.planning" class="planning-badge" :class="date.planning.type">
-            {{ planningLabel[date.planning.type] }}
+
+          <!-- 👇 MULTI PLANNING -->
+          <div v-if="date.plannings.length" class="planning-list">
+            <div
+              v-for="p in date.plannings"
+              :key="p.id"
+              class="planning-item"
+              :class="p.type"
+            >
+              <span class="user-name">{{ p.user?.name || 'Usuario' }}</span>
+              <span class="icon">{{ planningLabel[p.type] }}</span>
+            </div>
           </div>
+
           <span v-else class="date-empty">-</span>
         </div>
       </div>
     </div>
 
-    <!-- LEYENDA -->
+    <!-- LEGEND -->
     <div class="legend-section">
-      <div class="legend-title">Leyenda:</div>
-      <div class="legend-items">
-        <div class="legend-item">
-          <span class="badge work">✓</span>
-          <span>Trabaja</span>
-        </div>
-        <div class="legend-item">
-          <span class="badge vacation">🏖️</span>
-          <span>Vacaciones</span>
-        </div>
-        <div class="legend-item">
-          <span class="badge sick">🏥</span>
-          <span>Baja médica</span>
-        </div>
-      </div>
+      <div class="legend-item">✓ Trabajo</div>
+      <div class="legend-item">🏖️ Vacaciones</div>
+      <div class="legend-item">🏥 Baja</div>
     </div>
 
-    <!-- HINT PARA ADMINS -->
-    <div v-if="isAdmin && !selectedDate" class="admin-hint">
-      <strong>💡 Cómo usar:</strong> Completa los campos arriba (fecha y estado) o haz clic en una fecha del calendario para editarla.
-    </div>
   </div>
 </template>
 
@@ -95,24 +108,35 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
 
 const props = defineProps({
-  userId: {
-    type: [Number, String],
-    required: true
-  }
+  userId: [Number, String]
 })
 
 const auth = useAuthStore()
 const isAdmin = computed(() => auth.user?.role === 'admin')
 
+/* ---------------- USERS ---------------- */
+const users = ref([])
+const userSearch = ref('')
+const selectedUserId = ref(props.userId)
+
+const filteredUsers = computed(() =>
+  users.value.filter(u =>
+    u.name.toLowerCase().includes(userSearch.value.toLowerCase())
+  )
+)
+
+/* ---------------- STATE ---------------- */
 const currentDate = ref(new Date())
 const planning = ref([])
+
 const selectedDate = ref('')
 const selectedType = ref('')
 const selectedNotes = ref('')
 const existingPlanning = ref(null)
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
-const weekDays = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
-const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+
+const API = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
+const weekDays = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb']
 
 const planningLabel = {
   work: '✓',
@@ -120,110 +144,83 @@ const planningLabel = {
   sick: '🏥'
 }
 
+/* ---------------- CALENDAR ---------------- */
 const monthYear = computed(() => {
-  const month = monthNames[currentDate.value.getMonth()]
-  const year = currentDate.value.getFullYear()
-  return `${month} ${year}`
+  const m = currentDate.value.toLocaleString('es', { month: 'long' })
+  return `${m} ${currentDate.value.getFullYear()}`
 })
 
 const calendarDays = computed(() => {
-  const year = currentDate.value.getFullYear()
-  const month = currentDate.value.getMonth()
-  
-  const firstDay = new Date(year, month, 1)
-  const lastDay = new Date(year, month + 1, 0)
-  const startDate = new Date(firstDay)
-  startDate.setDate(startDate.getDate() - firstDay.getDay())
-  
-  const days = []
-  const current = new Date(startDate)
-  
-  const endDate = new Date(lastDay)
-endDate.setDate(endDate.getDate() + (6 - lastDay.getDay()))
+  const y = currentDate.value.getFullYear()
+  const m = currentDate.value.getMonth()
 
-while (current <= endDate) {
-   const iso = current.toLocaleDateString('en-CA')
-    const dayPlanning = planning.value.find(
-  p => p.date.split('T')[0] === iso
-)
-    const isCurrentMonth = current.getMonth() === month
-    const isToday = iso === new Date().toLocaleDateString('en-CA')
-    
+  const first = new Date(y, m, 1)
+  const start = new Date(first)
+  start.setDate(start.getDate() - first.getDay())
+
+  const days = []
+  const current = new Date(start)
+
+  const end = new Date(y, m + 1, 0)
+  end.setDate(end.getDate() + (6 - end.getDay()))
+
+  while (current <= end) {
+    const iso = current.toLocaleDateString('en-CA')
+
+    const plannings = planning.value.filter(
+      p => p.date.split('T')[0] === iso
+    )
+
     days.push({
       day: current.getDate(),
-      iso: iso,
-      planning: dayPlanning,
+      iso,
+      plannings,
       classes: {
-        'other-month': !isCurrentMonth,
-        'has-planning': !!dayPlanning,
-        'is-today': isToday
+        'other-month': current.getMonth() !== m,
+        'has-planning': plannings.length > 0
       }
     })
-    
+
     current.setDate(current.getDate() + 1)
   }
-  
+
   return days
 })
 
-const formatDate = (dateStr) => {
-  if (!dateStr) return ''
-  const [year, month, day] = dateStr.split('-')
-  const date = new Date(year, parseInt(month) - 1, day)
-  return date.toLocaleDateString('es-ES', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
+/* ---------------- API ---------------- */
+const fetchUsers = async () => {
+  if (!isAdmin.value) return
+  const res = await fetch(`${API}/api/users`, {
+    headers: { Authorization: `Bearer ${auth.token}` }
   })
-}
-
-const previousMonth = () => {
-  currentDate.value.setMonth(currentDate.value.getMonth() - 1)
-  currentDate.value = new Date(currentDate.value)
-}
-
-const nextMonth = () => {
-  currentDate.value.setMonth(currentDate.value.getMonth() + 1)
-  currentDate.value = new Date(currentDate.value)
+  users.value = await res.json()
 }
 
 const fetchPlanning = async () => {
-  try {
-    const params = new URLSearchParams()
-    const firstDay = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth(), 1)
-    const lastDay = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 0)
-    
-    params.append('start_date', firstDay.toISOString().split('T')[0])
-    params.append('end_date', lastDay.toISOString().split('T')[0])
+  const first = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth(), 1)
+  const last = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 0)
 
-    const response = await fetch(
-      `${API_BASE_URL}/api/planning/user/${props.userId}?${params}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${auth.token}`
-        }
-      }
-    )
-    
-    if (response.ok) {
-      planning.value = await response.json()
-    } else {
-      console.error('Error fetching planning:', response.status)
+  const res = await fetch(
+    `${API}/api/planning/user/${selectedUserId.value}?start_date=${first.toISOString().split('T')[0]}&end_date=${last.toISOString().split('T')[0]}`,
+    {
+      headers: { Authorization: `Bearer ${auth.token}` }
     }
-  } catch (error) {
-    console.error('Error fetching planning:', error)
-  }
+  )
+
+  planning.value = await res.json()
 }
 
+/* ---------------- ACTIONS ---------------- */
 const selectDate = (date) => {
-  if (!isAdmin.value || date.classes['other-month']) return
-  
+  if (!isAdmin.value) return
+
   selectedDate.value = date.iso
-  if (date.planning) {
-    selectedType.value = date.planning.type
-    selectedNotes.value = date.planning.notes || ''
-    existingPlanning.value = date.planning
+
+  const found = date.plannings[0]
+  if (found) {
+    selectedType.value = found.type
+    selectedNotes.value = found.notes
+    existingPlanning.value = found
   } else {
     selectedType.value = ''
     selectedNotes.value = ''
@@ -232,85 +229,38 @@ const selectDate = (date) => {
 }
 
 const savePlanning = async () => {
-  if (!selectedDate.value || !selectedType.value) {
-    alert('Selecciona fecha y tipo')
-    return
-  }
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/planning`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${auth.token}`
-      },
-      body: JSON.stringify({
-        user_id: props.userId,
-        date: selectedDate.value,
-        type: selectedType.value,
-        notes: selectedNotes.value || null
-      })
+  await fetch(`${API}/api/planning`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${auth.token}`
+    },
+    body: JSON.stringify({
+      user_id: selectedUserId.value,
+      date: selectedDate.value,
+      type: selectedType.value,
+      notes: selectedNotes.value
     })
+  })
 
-    if (response.ok) {
-      const saved = await response.json()
-      existingPlanning.value = saved
-      alert('✅ Planning guardado correctamente')
-      selectedDate.value = ''
-      selectedType.value = ''
-      selectedNotes.value = ''
-      await fetchPlanning()
-    } else {
-      const error = await response.json()
-      alert('❌ Error: ' + (error.error || 'No se pudo guardar el planning'))
-    }
-  } catch (error) {
-    console.error('Error:', error)
-    alert('❌ Error guardando planning')
-  }
+  await fetchPlanning()
 }
 
 const deletePlanningEntry = async () => {
-  if (!existingPlanning.value) return
-  
-  if (!confirm('¿Seguro que quieres eliminar este planning?')) return
+  await fetch(`${API}/api/planning/${existingPlanning.value.id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${auth.token}` }
+  })
 
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/planning/${existingPlanning.value.id}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${auth.token}`
-      }
-    })
-
-    if (response.ok) {
-      alert('✅ Planning eliminado correctamente')
-      selectedDate.value = ''
-      selectedType.value = ''
-      selectedNotes.value = ''
-      existingPlanning.value = null
-      await fetchPlanning()
-    } else {
-      alert('❌ Error eliminando planning')
-    }
-  } catch (error) {
-    console.error('Error:', error)
-    alert('❌ Error eliminando planning')
-  }
+  await fetchPlanning()
 }
 
-watch(() => props.userId, () => {
-  fetchPlanning()
-})
-
-watch(currentDate, () => {
-  fetchPlanning()
-}, { deep: true })
+/* ---------------- WATCHERS ---------------- */
+watch(selectedUserId, fetchPlanning)
+watch(currentDate, fetchPlanning)
 
 onMounted(() => {
-  console.log('PlanningCalendar mounted')
-  console.log('Auth user:', auth.user)
-  console.log('Is Admin:', isAdmin.value)
+  fetchUsers()
   fetchPlanning()
 })
 </script>
@@ -320,290 +270,208 @@ onMounted(() => {
   background: white;
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* ADMIN PANEL */
+/* ---------------- USER SELECTOR ---------------- */
+
+.user-selector {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.user-select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+/* ---------------- ADMIN PANEL ---------------- */
+
 .admin-panel {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg,#667eea,#764ba2);
   color: white;
-  padding: 20px;
+  padding: 15px;
   border-radius: 8px;
-  margin-bottom: 25px;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
-
-.admin-panel h3 {
-  margin: 0 0 15px 0;
-  font-size: 18px;
+  margin-bottom: 20px;
 }
 
 .edit-form {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+  gap: 10px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
 }
 
 .form-group label {
+  font-size: 13px;
   font-weight: 600;
-  font-size: 14px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .date-input,
 .type-select,
 .notes-input {
-  padding: 10px 12px;
+  padding: 8px;
+  border-radius: 6px;
   border: none;
-  border-radius: 4px;
   font-size: 14px;
-  font-family: inherit;
 }
 
 .notes-input {
   min-height: 60px;
-  resize: vertical;
-  grid-column: 1 / -1;
 }
 
 .form-actions {
   display: flex;
   gap: 10px;
   grid-column: 1 / -1;
-  margin-top: 10px;
 }
 
 .btn {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: all 0.2s;
   flex: 1;
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
 }
 
 .btn-primary {
-  background: #fff;
+  background: white;
   color: #667eea;
 }
 
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
 .btn-danger {
-  background: #ff4757;
+  background: #ff4d4f;
   color: white;
 }
 
-.btn-danger:hover:not(:disabled) {
-  background: #ff3838;
-  transform: translateY(-2px);
-}
+/* ---------------- CALENDAR ---------------- */
 
-.form-hint {
-  grid-column: 1 / -1;
-  margin: 0;
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  font-size: 13px;
-  border-left: 3px solid white;
-}
-
-/* CALENDAR */
 .calendar-wrapper {
-  margin-bottom: 20px;
+  margin-top: 15px;
 }
 
 .calendar-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  gap: 15px;
+  margin-bottom: 10px;
 }
 
 .nav-btn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
   background: #007bff;
   color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: all 0.2s;
-}
-
-.nav-btn:hover {
-  background: #0056b3;
-  transform: translateY(-1px);
-}
-
-.calendar-title {
-  margin: 0;
-  font-size: 20px;
-  color: #333;
-  min-width: 200px;
-  text-align: center;
 }
 
 .calendar-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-  margin-bottom: 20px;
+  grid-template-columns: repeat(7,1fr);
+  gap: 6px;
 }
 
 .day-header {
-  font-weight: bold;
   text-align: center;
-  padding: 12px 8px;
-  background: #f0f0f0;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f2f2f2;
+  padding: 6px;
   border-radius: 4px;
-  font-size: 13px;
-  color: #555;
 }
+
+/* ---------------- DAY CELL ---------------- */
 
 .calendar-day {
-  aspect-ratio: 1;
-  border: 2px solid #e0e0e0;
+  min-height: 80px;
+  border: 1px solid #e5e5e5;
   border-radius: 6px;
-  padding: 8px;
+  padding: 4px;
+  background: white;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  position: relative;
-  background: white;
-  min-height: 70px;
-  transition: all 0.2s ease;
-  font-size: 12px;
-}
-
-.calendar-day.clickable:not(.other-month) {
-  cursor: pointer;
-}
-
-.calendar-day.clickable:not(.other-month):hover {
-  border-color: #007bff;
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
-  background: #f0f7ff;
-  transform: translateY(-2px);
 }
 
 .calendar-day.other-month {
-  background: #fafafa;
-  color: #ccc;
-  cursor: default;
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
 .calendar-day.has-planning {
   border-color: #28a745;
-  background: #f0fdf4;
-}
-
-.calendar-day.is-today {
-  border-color: #ffc107;
-  background: #fffbf0;
-  box-shadow: 0 0 0 1px #ffc107;
+  background: #f6fff8;
 }
 
 .date-number {
   font-weight: bold;
-  font-size: 16px;
-  color: #333;
+  font-size: 13px;
+  margin-bottom: 2px;
 }
 
-.planning-badge {
-  font-size: 24px;
-  margin-top: 4px;
+/* ---------------- MULTI PLANNING ---------------- */
+
+.planning-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 3px;
 }
 
-.date-empty {
-  color: #ccc;
-  font-size: 14px;
+.planning-item {
+  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
-/* LEGEND */
+/* colores por tipo */
+.planning-item.work {
+  background: #e6f7ff;
+  border-left: 3px solid #1890ff;
+}
+
+.planning-item.vacation {
+  background: #fff7e6;
+  border-left: 3px solid #faad14;
+}
+
+.planning-item.sick {
+  background: #fff1f0;
+  border-left: 3px solid #ff4d4f;
+}
+
+.user-name {
+  font-size: 9px;
+  opacity: 0.7;
+}
+
+/* ---------------- LEGEND ---------------- */
+
 .legend-section {
-  background: #f8f9fa;
-  padding: 15px 20px;
-  border-radius: 6px;
-  margin-bottom: 15px;
-}
-
-.legend-title {
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-.legend-items {
+  margin-top: 15px;
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
+  gap: 15px;
+  font-size: 13px;
   color: #555;
-}
-
-.badge {
-  display: inline-block;
-  width: 32px;
-  height: 32px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.badge.work {
-  background: #28a745;
-}
-
-.badge.vacation {
-  background: #ffc107;
-  color: #333;
-}
-
-.badge.sick {
-  background: #dc3545;
-}
-
-/* HINT */
-.admin-hint {
-  background: #d4edff;
-  border: 1px solid #b3d9ff;
-  color: #0056b3;
-  padding: 12px 15px;
-  border-radius: 4px;
-  font-size: 14px;
-  border-left: 4px solid #0056b3;
 }
 </style>
