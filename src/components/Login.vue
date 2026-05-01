@@ -35,6 +35,35 @@
           />
         </div>
 
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input 
+            v-model="form.phone"
+            type="tel"
+            placeholder="Tu número de teléfono"
+            required
+          />
+        </div>
+
+          <div class="form-group">
+        <label>Especialidades</label>
+        <input 
+          v-model="form.specialties"
+          type="text"
+          placeholder="Ej: Traumatología, Deportiva"
+          :disabled="loading"
+        />
+      </div>
+
+        <div v-if="isRegister" class="form-group">
+        <label>Tipo de Usuario</label>
+        <select v-model="form.type" required :disabled="loading">
+          <option value="">Selecciona un tipo</option>
+          <option value="fisio">Fisioterapeuta</option>
+          <option value="admin">Administrador</option>
+        </select>
+      </div>
+
         <div v-if="error" class="error-message">
           ❌ {{ error }}
         </div>
@@ -65,7 +94,10 @@ export default {
     const form = ref({
       email: '',
       password: '',
-      username: ''
+      username: '',
+      specialties: '',
+      phone: '',
+      type: ''
     })
 
     const isRegister = ref(false)
@@ -75,7 +107,7 @@ export default {
     const toggleMode = () => {
       isRegister.value = !isRegister.value
       error.value = ''
-      form.value = { email: '', password: '', username: '' }
+      form.value = { email: '', password: '', username: '', specialties: '', phone: '', type: '' }
     }
 
     const handleSubmit = async () => {
@@ -90,22 +122,16 @@ export default {
             return
           }
           console.log('Registrando...')
-          await register(form.value.username, form.value.email, form.value.password)
+          await register(form.value.username, form.value.email, form.value.password, form.value.specialties, form.value.phone, form.value.type)
           error.value = ''
           isRegister.value = false
-          form.value = { email: form.value.email, password: '', username: '' }
+          form.value = { email: form.value.email, password: '', username: '', specialties: '', phone: '', type: '' }
           error.value = ''
         } else {
           console.log('Llamando login API...')
           const data = await login(form.value.email, form.value.password)
-          console.log('Login API respondió:', data)
-          console.log('User object:', data.user)
-          console.log('User role:', data.user?.role)
           auth.login(data.token, data.user)
-          console.log('Auth actualizado, redirigiendo...')
-          console.log('Auth state:', auth.isAuthenticated, auth.user)
           await router.push('/calendario')
-          console.log('Redirigido a calendario')
         }
       } catch (err) {
         console.error('Error en login:', err)

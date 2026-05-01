@@ -26,6 +26,17 @@
       </div>
 
       <div class="form-group">
+        <label>Password</label>
+        <input 
+          v-model="form.password"
+          type="password"
+          placeholder="••••••••"
+          required
+          :disabled="loading"
+        />
+      </div>
+
+      <div class="form-group">
         <label>Teléfono</label>
         <input 
           v-model="form.phone"
@@ -45,15 +56,6 @@
         />
       </div>
 
-      <div class="form-group">
-        <label>Licencia Profesional</label>
-        <input 
-          v-model="form.license"
-          type="text"
-          placeholder="Número de licencia"
-          :disabled="loading"
-        />
-      </div>
 
       <div class="form-group">
         <label>Tipo de Usuario</label>
@@ -116,6 +118,7 @@ export default {
     const form = ref({
       name: '',
       email: '',
+      password: '',
       phone: '',
       specialties: '',
       license: '',
@@ -157,6 +160,7 @@ export default {
       form.value = {
         name: '',
         email: '',
+        password: '',
         phone: '',
         specialties: '',
         license: '',
@@ -174,6 +178,7 @@ export default {
         form.value = {
           name: '',
           email: '',
+          password: '',
           phone: '',
           specialties: '',
           license: '',

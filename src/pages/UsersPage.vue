@@ -44,9 +44,6 @@
           <p v-if="user.phone" class="user-info">
             <strong>Teléfono:</strong> {{ user.phone }}
           </p>
-          <p v-if="user.license" class="user-info">
-            <strong>Licencia:</strong> {{ user.license }}
-          </p>
           <p class="user-role">
             <strong>Rol:</strong> 
             <span :class="user.role">
