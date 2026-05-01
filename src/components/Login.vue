@@ -35,7 +35,7 @@
           />
         </div>
 
-        <div class="form-group">
+        <div v-if="isRegister" class="form-group">
           <label>Teléfono</label>
           <input 
             v-model="form.phone"
@@ -45,7 +45,7 @@
           />
         </div>
 
-          <div class="form-group">
+          <div v-if="isRegister" class="form-group">
         <label>Especialidades</label>
         <input 
           v-model="form.specialties"
