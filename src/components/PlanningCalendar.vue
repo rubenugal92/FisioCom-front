@@ -95,7 +95,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
 
 const props = defineProps({
-  fisioId: {
+  userId: {
     type: [Number, String],
     required: true
   }
@@ -193,7 +193,7 @@ const fetchPlanning = async () => {
     params.append('end_date', lastDay.toISOString().split('T')[0])
 
     const response = await fetch(
-      `${API_BASE_URL}/api/planning/fisio/${props.fisioId}?${params}`,
+      `${API_BASE_URL}/api/planning/user/${props.userId}?${params}`,
       {
         headers: {
           'Authorization': `Bearer ${auth.token}`
@@ -240,7 +240,7 @@ const savePlanning = async () => {
         'Authorization': `Bearer ${auth.token}`
       },
       body: JSON.stringify({
-        fisio_id: props.fisioId,
+        user_id: props.userId,
         date: selectedDate.value,
         type: selectedType.value,
         notes: selectedNotes.value || null
@@ -294,7 +294,7 @@ const deletePlanningEntry = async () => {
   }
 }
 
-watch(() => props.fisioId, () => {
+watch(() => props.userId, () => {
   fetchPlanning()
 })
 

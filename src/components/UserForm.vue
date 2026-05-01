@@ -105,7 +105,7 @@
 
 <script>
 import { ref, computed, watch } from 'vue'
-import { createUser, updateUser } from '../api/appointments.js'
+import { register, updateUser } from '../api/appointments.js'
 
 export default {
   name: 'UserForm',
@@ -115,7 +115,7 @@ export default {
   },
   emits: ['save', 'cancel'],
   setup(props, { emit }) {
-    const form = ref({
+     const form = ref({
       email: '',
       password: '',
       username: '',
@@ -141,7 +141,7 @@ export default {
         if (isEditing.value) {
           await updateUser(props.editing.id, data)
         } else {
-          await createUser(data)
+          await register(data)
         }
 
         emit('save')
