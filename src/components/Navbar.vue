@@ -35,7 +35,7 @@
 
       <div class="nav-user">
         <span class="user-name">
-          {{ user?.username || 'Usuario' }} ({{ user?.role === 'admin' ? 'Admin' : 'User' }})
+          {{ user?.name || 'Usuario' }} ({{ user?.role === 'admin' ? 'Admin' : 'User' }})
         </span>
 
         <button class="btn btn-logout" @click="handleLogout">
