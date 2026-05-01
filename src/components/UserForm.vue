@@ -4,11 +4,11 @@
 
     <form @submit.prevent="submitForm" class="user-form">
       <div class="form-group">
-        <label>Nombre Completo</label>
+        <label>Nombre de Usuario</label>
         <input 
-          v-model="form.name"
+          v-model="form.username"
           type="text"
-          placeholder="Ej: Juan García"
+          placeholder="Ej: juanGarcia92"
           required
           :disabled="loading"
         />
@@ -105,14 +105,12 @@ export default {
   emits: ['save', 'cancel'],
   setup(props, { emit }) {
     const form = ref({
-      name: '',
       email: '',
       password: '',
-      phone: '',
+      username: '',
       specialties: '',
-      type: 'fisio',
-      role: 'user',
-      password: ''
+      phone: '',
+      type: ''
     })
 
     const loading = ref(false)
@@ -146,7 +144,7 @@ export default {
 
     const resetForm = () => {
       form.value = {
-        name: '',
+        username: '',
         email: '',
         password: '',
         phone: '',
@@ -163,7 +161,7 @@ export default {
         form.value = { ...newVal, password: '' }
       } else {
         form.value = {
-          name: '',
+          username: '',
           email: '',
           password: '',
           phone: '',

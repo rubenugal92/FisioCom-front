@@ -31,9 +31,10 @@ export const login = async (email, password) => {
   return data
 }
 
-export const register = async (username, email, password, specialities, phone, type) => {
+export const register = async (username, name, email, password, specialities, phone, type) => {
   const { data } = await axios.post(`${API_BASE_URL}/auth/register`, {
     username,
+    name,
     email,
     password,
     specialities,
@@ -79,9 +80,9 @@ export const getAppointmentsByDateRange = async (startDate, endDate) => {
   return data
 }
 
-export const getAvailableSlots = async (date, fisioId = null) => {
+export const getAvailableSlots = async (date, userId = null) => {
   let url = `/slots/${date}`
-  if (fisioId) url += `?fisio_id=${fisioId}`
+  if (userId) url += `?user_id=${userId}`
 
   const { data } = await api.get(url)
   return data.slots
@@ -129,10 +130,10 @@ export const deleteUser = async (id) => {
 }
 
 // Legacy aliases for backward compatibility
-export const getAllFisios = getAllUsers
-export const getFisioById = getUserById
-export const createFisio = createUser
-export const updateFisio = updateUser
-export const deleteFisio = deleteUser
+export const getAllUsers = getAllUsers
+export const getUserById = getUserById
+export const createUser = createUser
+export const updateUser = updateUser
+export const deleteUser = deleteUser
 
 export default api

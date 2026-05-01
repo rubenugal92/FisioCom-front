@@ -15,6 +15,16 @@
           />
         </div>
 
+        <div v-if="isRegister" class="form-group">
+          <label>Nombre</label>
+          <input 
+            v-model="form.name"
+            type="text"
+            placeholder="Tu nombre"
+            required
+          />
+        </div>
+
         <div class="form-group">
           <label>Correo Electrónico</label>
           <input 
@@ -95,6 +105,7 @@ export default {
       email: '',
       password: '',
       username: '',
+      name: '',
       specialties: '',
       phone: '',
       type: ''
@@ -107,7 +118,7 @@ export default {
     const toggleMode = () => {
       isRegister.value = !isRegister.value
       error.value = ''
-      form.value = { email: '', password: '', username: '', specialties: '', phone: '', type: '' }
+      form.value = { email: '', password: '', username: '', name: '', specialties: '', phone: '', type: '' }
     }
 
     const handleSubmit = async () => {
@@ -122,10 +133,10 @@ export default {
             return
           }
           console.log('Registrando...')
-          await register(form.value.username, form.value.email, form.value.password, form.value.specialties, form.value.phone, form.value.type)
+          await register(form.value.username, form.value.name, form.value.email, form.value.password, form.value.specialties, form.value.phone, form.value.type)
           error.value = ''
           isRegister.value = false
-          form.value = { email: form.value.email, password: '', username: '', specialties: '', phone: '', type: '' }
+          form.value = { email: form.value.email, password: '', username: '', name: '', specialties: '', phone: '', type: '' }
           error.value = ''
         } else {
           console.log('Llamando login API...')

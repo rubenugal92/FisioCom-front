@@ -9,7 +9,7 @@
     <div v-if="!isAdmin" class="content">
       <div class="user-planning">
         <h2>Tu Planning</h2>
-        <PlanningCalendar :fisio-id="auth.user?.id" />
+        <PlanningCalendar :user-id="auth.user?.id" />
       </div>
     </div>
 
@@ -34,14 +34,14 @@
             <h3>{{ getSelectedUserName() }}</h3>
             <button @click="selectedUserId = ''" class="btn btn-secondary">Volver a ver todos</button>
           </div>
-          <PlanningCalendar :fisio-id="selectedUserId" :key="selectedUserId" />
+          <PlanningCalendar :user-id="selectedUserId" :key="selectedUserId" />
         </div>
 
         <!-- Vista grid de todos los usuarios -->
         <div v-else class="all-planning-grid">
           <div v-for="user in users" :key="user.id" class="user-planning-card">
             <h3>{{ user.name }}</h3>
-            <PlanningCalendar :fisio-id="user.id" :key="`all-${user.id}`" />
+            <PlanningCalendar :user-id="user.id" :key="`all-${user.id}`" />
           </div>
         </div>
       </div>
