@@ -170,11 +170,11 @@ onMounted(() => {
   transition: border-color 0.2s;
 }
 
-.fisio-select:hover {
+.user-select:hover {
   border-color: #007bff;
 }
 
-.fisio-select:focus {
+.user-select:focus {
   outline: none;
   border-color: #007bff;
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
@@ -196,7 +196,7 @@ onMounted(() => {
   border-bottom: 2px solid #007bff;
 }
 
-.fisio-header h3 {
+.user-header h3 {
   margin: 0;
   color: #333;
 }
