@@ -12,7 +12,7 @@
           :class="{ active: route.path === '/calendario' }"
           @click="go('/calendario')"
         >
-          📅 Calendario
+          📅 Citas
         </button>
 
         <button
@@ -21,7 +21,7 @@
           :class="{ active: route.path === '/usuarios' }"
           @click="go('/usuarios')"
         >
-          👥 Usuarios
+          👥 Empleados
         </button>
 
         <button
@@ -29,7 +29,7 @@
           :class="{ active: route.path === '/planning' }"
           @click="go('/planning')"
         >
-          📋 Planning
+          📋 Planning Empleado
         </button>
       </div>
 
