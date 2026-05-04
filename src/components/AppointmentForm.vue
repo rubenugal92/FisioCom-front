@@ -188,7 +188,8 @@ export default {
       // Si usuario selecciona 15:00, guardamos como 13:00 UTC
       const [hours, minutes] = form.value.time.split(':').map(Number)
       const utcHours = String((hours - 2 + 24) % 24).padStart(2, '0')
-      const datetime = `${form.value.date}T${utcHours}:${minutes}:00`
+      const utcMinutes = String(minutes).padStart(2, '0')
+      const datetime = `${form.value.date}T${utcHours}:${utcMinutes}:00`
 
       const appointmentData = {
         phone: form.value.phone,
@@ -196,7 +197,7 @@ export default {
         service: form.value.service,
         status: form.value.status,
         notes: form.value.notes,
-        fisio_id: parseInt(form.value.fisio_id)
+        user_id: parseInt(form.value.fisio_id)
       }
 
       try {
