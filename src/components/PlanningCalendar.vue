@@ -255,6 +255,18 @@ const deletePlanningEntry = async () => {
   await fetchPlanning()
 }
 
+const previousMonth = () => {
+  const newDate = new Date(currentDate.value)
+  newDate.setMonth(newDate.getMonth() - 1)
+  currentDate.value = newDate
+}
+
+const nextMonth = () => {
+  const newDate = new Date(currentDate.value)
+  newDate.setMonth(newDate.getMonth() + 1)
+  currentDate.value = newDate
+}
+
 /* ---------------- WATCHERS ---------------- */
 watch(selectedUserId, fetchPlanning)
 watch(currentDate, fetchPlanning)
