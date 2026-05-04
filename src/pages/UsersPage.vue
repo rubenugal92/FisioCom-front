@@ -2,8 +2,8 @@
   <div class="page-container">
     <div class="page-header">
       <div>
-        <h2>Usuarios</h2>
-        <p>Gestión de usuarios del sistema</p>
+        <h2>Empleados</h2>
+        <p>Gestión de empleados del sistema</p>
       </div>
 
       <button 
@@ -11,7 +11,7 @@
         class="btn btn-primary"
         @click="showForm = true"
       >
-        ➕ Nuevo Usuario
+        ➕ Nuevo Empleado
       </button>
     </div>
 
@@ -25,7 +25,7 @@
 
     <!-- LISTA -->
     <div v-if="store.items.length === 0 && !showForm" class="empty-state">
-      No hay usuarios registrados todavía.
+      No hay empleados registrados todavía.
     </div>
 
     <div v-else-if="!showForm" class="users-grid">
@@ -96,7 +96,7 @@ const handleSave = async () => {
 }
 
 const handleDelete = async (id) => {
-  if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
+  if (confirm('¿Estás seguro de que deseas eliminar este empleado?')) {
     await store.remove(id)
     await store.fetch()
   }
