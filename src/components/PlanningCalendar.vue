@@ -1,21 +1,6 @@
 <template>
   <div class="planning-container">
 
-    <!-- 🔍 USER SELECTOR (solo admin) -->
-    <div v-if="isAdmin" class="user-selector">
-      <input
-        v-model="userSearch"
-        placeholder="Buscar usuario..."
-        class="search-input"
-      />
-
-      <select v-model="selectedUserId" class="user-select">
-        <option v-for="u in filteredUsers" :key="u.id" :value="u.id">
-          {{ u.name }}
-        </option>
-      </select>
-    </div>
-
     <!-- ✏️ ADMIN PANEL -->
     <div v-if="isAdmin" class="admin-panel">
       <h3>✏️ Editar Planning</h3>

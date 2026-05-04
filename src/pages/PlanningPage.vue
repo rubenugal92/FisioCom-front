@@ -13,14 +13,14 @@
       </div>
     </div>
 
-    <!-- Vista para admin (todos los usuarios) -->
+    <!-- Vista para admin (todos los empleados) -->
     <div v-else-if="isAdmin" class="content">
       <div class="admin-view">
         <div class="controls-section">
           <div class="selector-wrapper">
-            <h2>Selecciona un Usuario</h2>
+            <h2>Selecciona un Empleado</h2>
             <select v-model="selectedUserId" class="user-select">
-              <option value="">📊 Ver todos los usuarios</option>
+              <option value="">📊 Ver todos los empleados</option>
               <option v-for="user in users" :key="user.id" :value="String(user.id)">
                 {{ user.name }}
               </option>
@@ -28,7 +28,7 @@
           </div>
         </div>
 
-        <!-- Vista individual de un usuario -->
+        <!-- Vista individual de un empleado -->
         <div v-if="selectedUserId" class="selected-planning-wrapper">
           <div class="user-header">
             <h3>{{ getSelectedUserName() }}</h3>
@@ -37,7 +37,7 @@
           <PlanningCalendar :user-id="selectedUserId" :key="selectedUserId" />
         </div>
 
-        <!-- Vista grid de todos los usuarios -->
+        <!-- Vista grid de todos los empleados -->
         <div v-else class="all-planning-grid">
           <div v-for="user in users" :key="user.id" class="user-planning-card">
             <h3>{{ user.name }}</h3>
