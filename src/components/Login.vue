@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <div class="login-card">
-      <h1>🏥 FisioCom</h1>
+      <h1>NombreEmpresa</h1>
       <p class="subtitle">Sistema de Gestión de Citas</p>
 
       <form @submit.prevent="handleSubmit" class="login-form">
@@ -170,29 +170,32 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f5f6f8;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .login-card {
-  background: white;
+  background: #ffffff;
   padding: 3rem;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
   width: 100%;
   max-width: 400px;
+  border: 1px solid #ececec;
 }
 
 .login-card h1 {
   margin: 0 0 0.5rem 0;
-  color: #333;
+  color: #111111;
   text-align: center;
-  font-size: 2.5rem;
+  font-size: 2.3rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
   text-align: center;
-  color: #666;
+  color: #6b7280;
   margin: 0 0 2rem 0;
   font-size: 0.9rem;
 }
@@ -210,63 +213,68 @@ export default {
 
 .form-group label {
   margin-bottom: 0.5rem;
-  color: #333;
+  color: #111111;
   font-weight: 500;
   font-size: 0.9rem;
 }
 
 .form-group input {
   padding: 0.75rem;
-  border: 2px solid #e0e0e0;
-  border-radius: 6px;
+  border: 1px solid #d6d6d6;
+  border-radius: 8px;
   font-size: 1rem;
-  transition: border-color 0.3s;
+  background: #fff;
+  transition: all 0.2s ease;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #111111;
+  box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.08);
 }
 
 .error-message {
-  background: #fee;
-  color: #c33;
+  background: #fef2f2;
+  color: #b91c1c;
   padding: 0.75rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.9rem;
+  border: 1px solid #fecaca;
 }
 
 .btn {
   padding: 0.75rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.3s;
+  transition: all 0.2s ease;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #111111;
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+  background: #222222;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 .btn-primary:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
 .btn-link {
   background: none;
-  color: #667eea;
+  color: #111111;
   padding: 0.5rem;
   margin-top: 1rem;
   text-decoration: none;
+  font-size: 0.9rem;
 }
 
 .btn-link:hover:not(:disabled) {
@@ -274,7 +282,7 @@ export default {
 }
 
 .btn-link:disabled {
-  color: #ccc;
+  color: #aaa;
   cursor: not-allowed;
 }
 </style>
