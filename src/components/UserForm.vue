@@ -1,10 +1,10 @@
 <template>
   <div class="form-container">
-    <h3>{{ isEditing ? 'Editar Usuario' : 'Nuevo Usuario' }}</h3>
+    <h3>{{ isEditing ? 'Editar Empleado' : 'Nuevo Empleado' }}</h3>
 
     <form @submit.prevent="submitForm" class="user-form">
       <div class="form-group">
-        <label>Nombre de Usuario</label>
+        <label>Nombre de Empleado</label>
         <input 
           v-model="form.username"
           type="text"
@@ -69,10 +69,14 @@
 
 
       <div class="form-group">
-        <label>Tipo de Usuario</label>
+        <label>Tipo de Empleado</label>
         <select v-model="form.type" required :disabled="loading">
           <option value="">Selecciona un tipo</option>
           <option value="fisio">Fisioterapeuta</option>
+          <option value="osteo">Osteópata</option>
+          <option value="quiro">Quiropráctico</option>
+          <option value="recep">Recepcionista</option>
+          <option value="limpieza">Servicio de limpieza</option>
           <option value="admin">Administrador</option>
         </select>
       </div>
