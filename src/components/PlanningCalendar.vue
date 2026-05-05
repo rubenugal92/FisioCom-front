@@ -3,12 +3,17 @@
 
     <!-- ✏️ ADMIN PANEL -->
     <div v-if="isAdmin" class="admin-panel">
-      <h3>✏️ Editar Planning</h3>
+      <h3>✏️ Editar Planning (Rango de Fechas)</h3>
 
       <div class="edit-form">
         <div class="form-group">
-          <label>Fecha:</label>
-          <input v-model="selectedDate" type="date" class="date-input" />
+          <label>Fecha Inicio:</label>
+          <input v-model="startDate" type="date" class="date-input" />
+        </div>
+
+        <div class="form-group">
+          <label>Fecha Fin:</label>
+          <input v-model="endDate" type="date" class="date-input" />
         </div>
 
         <div class="form-group">
@@ -21,14 +26,21 @@
           </select>
         </div>
 
+        <div class="form-group checkbox-group">
+          <label>
+            <input v-model="includeWeekends" type="checkbox" class="checkbox-input" />
+            Incluir fines de semana
+          </label>
+        </div>
+
         <div class="form-group">
-          <label>Notas:</label>
+          <label>Notas (opcional):</label>
           <textarea v-model="selectedNotes" class="notes-input" />
         </div>
 
         <div class="form-actions">
-          <button @click="savePlanning" class="btn btn-primary" :disabled="!selectedDate || !selectedType">
-            💾 Guardar
+          <button @click="savePlanning" class="btn btn-primary" :disabled="!startDate || !endDate || !selectedType">
+            💾 Guardar Rango
           </button>
 
           <button v-if="existingPlanning" @click="deletePlanningEntry" class="btn btn-danger">
@@ -114,9 +126,11 @@ const filteredUsers = computed(() =>
 const currentDate = ref(new Date())
 const planning = ref([])
 
-const selectedDate = ref('')
+const startDate = ref('')
+const endDate = ref('')
 const selectedType = ref('')
 const selectedNotes = ref('')
+const includeWeekends = ref(true)
 const existingPlanning = ref(null)
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:3000'
@@ -199,7 +213,9 @@ const fetchPlanning = async () => {
 const selectDate = (date) => {
   if (!isAdmin.value) return
 
-  selectedDate.value = date.iso
+  // Si hace click en una fecha, la usa como inicio
+  startDate.value = date.iso
+  endDate.value = date.iso
 
   const found = date.plannings[0]
   if (found) {
@@ -214,21 +230,40 @@ const selectDate = (date) => {
 }
 
 const savePlanning = async () => {
-  await fetch(`${API}/api/planning`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${auth.token}`
-    },
-    body: JSON.stringify({
-      user_id: selectedUserId.value,
-      date: selectedDate.value,
-      type: selectedType.value,
-      notes: selectedNotes.value
+  try {
+    const response = await fetch(`${API}/api/planning/bulk`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${auth.token}`
+      },
+      body: JSON.stringify({
+        user_id: selectedUserId.value,
+        start_date: startDate.value,
+        end_date: endDate.value,
+        type: selectedType.value,
+        notes: selectedNotes.value,
+        include_weekends: includeWeekends.value
+      })
     })
-  })
 
-  await fetchPlanning()
+    if (response.ok) {
+      // Limpiar formulario
+      startDate.value = ''
+      endDate.value = ''
+      selectedType.value = ''
+      selectedNotes.value = ''
+      includeWeekends.value = true
+      existingPlanning.value = null
+
+      // Recargar planning
+      await fetchPlanning()
+    } else {
+      console.error('Error al guardar planning:', response.statusText)
+    }
+  } catch (error) {
+    console.error('Error al guardar planning:', error)
+  }
 }
 
 const deletePlanningEntry = async () => {
@@ -316,6 +351,28 @@ onMounted(() => {
 .form-group label {
   font-size: 13px;
   font-weight: 600;
+}
+
+.checkbox-group {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox-group label {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.checkbox-input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
 }
 
 .date-input,
