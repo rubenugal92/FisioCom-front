@@ -63,6 +63,9 @@
           <div class="appointment-phone">
             {{ appointment.phone }}
           </div>
+          <div v-if="appointment.notes" class="appointment-notes">
+            <strong>Dolencia:</strong> {{ appointment.notes }}
+          </div>
           <div :class="'appointment-status appointment-status-' + appointment.status">
             {{ appointment.status }}
           </div>
@@ -347,6 +350,29 @@ export default {
   background: #e9ecef;
   transform: translateX(4px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.appointment-time {
+  font-weight: bold;
+  color: #667eea;
+  font-size: 1rem;
+}
+
+.appointment-phone {
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+.appointment-notes {
+  color: #555;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: #fff9e6;
+  border-radius: 4px;
+  border-left: 3px solid #faad14;
+  font-style: italic;
 }
 .appointment-time {
   font-weight: bold;
