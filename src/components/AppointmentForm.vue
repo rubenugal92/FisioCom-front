@@ -2,6 +2,14 @@
   <div class="form-container">
     <h3>{{ isEditing ? 'Editar Cita' : 'Nueva Cita' }}</h3>
 
+    <!-- MOSTRAR CUSTOM_ID DESPUÉS DE CREAR -->
+    <div v-if="lastCustomId" class="custom-id-alert">
+      <h4>🎫 ID de Tu Cita (para Anulaciones)</h4>
+      <p class="custom-id-value">{{ lastCustomId }}</p>
+      <p class="custom-id-hint">⚠️ Guarda este código para poder anular la cita si lo necesitas</p>
+      <button type="button" class="btn btn-small" @click="copyToClipboard">📋 Copiar</button>
+    </div>
+
     <form @submit.prevent="submitForm" class="appointment-form">
       <div class="form-group">
         <label>Teléfono del Cliente</label>
@@ -142,6 +150,7 @@ export default {
 
     const availableSlots = ref([])
     const fisios = ref([])
+    const lastCustomId = ref('')
 
     const isEditing = computed(() => !!props.appointment?.id)
 
@@ -204,15 +213,30 @@ export default {
         if (isEditing.value) {
           await updateAppointmentAPI(props.appointment.id, appointmentData)
         } else {
-          await createAppointment(appointmentData)
+          const response = await createAppointment(appointmentData)
+          // Mostrar el custom_id después de crear
+          if (response.custom_id) {
+            lastCustomId.value = response.custom_id
+          }
         }
 
         emit('save', appointmentData)
-        resetForm()
+        if (!isEditing.value) {
+          resetForm()
+        } else {
+          resetForm()
+        }
 
       } catch (e) {
         console.error(e)
         alert('Error: ' + (e.response?.data?.error || e.message))
+      }
+    }
+
+    const copyToClipboard = () => {
+      if (lastCustomId.value) {
+        navigator.clipboard.writeText(lastCustomId.value)
+        alert('✅ ID copiado al portapapeles')
       }
     }
 
@@ -264,10 +288,12 @@ export default {
       availableSlots,
       fisios,
       isEditing,
+      lastCustomId,
       resetForm,
       updateAvailableSlots,
       submitForm,
-      handleDelete
+      handleDelete,
+      copyToClipboard
     }
   }
 }
@@ -278,6 +304,56 @@ export default {
   padding: 1.5rem;
   background: #f8f9fa;
   border-radius: 8px;
+}
+
+.custom-id-alert {
+  background: linear-gradient(135deg, #fff5e6, #ffe6e6);
+  border: 2px solid #faad14;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.custom-id-alert h4 {
+  margin: 0 0 0.5rem 0;
+  color: #d46b08;
+  font-size: 1.1rem;
+}
+
+.custom-id-value {
+  font-family: monospace;
+  background: white;
+  border: 1px solid #faad14;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #222;
+  word-break: break-all;
+}
+
+.custom-id-hint {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  color: #ff4d4f;
+  font-weight: 600;
+}
+
+.btn-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  background: #faad14;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.btn-small:hover {
+  background: #d46b08;
 }
 
 .appointment-form {

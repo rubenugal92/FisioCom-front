@@ -63,6 +63,9 @@
           <div class="appointment-phone">
             {{ appointment.phone }}
           </div>
+          <div v-if="appointment.custom_id" class="appointment-custom-id">
+            <strong>ID:</strong> {{ appointment.custom_id }}
+          </div>
           <div v-if="appointment.notes" class="appointment-notes">
             <strong>Dolencia:</strong> {{ appointment.notes }}
           </div>
@@ -362,6 +365,18 @@ export default {
   color: #666;
   font-size: 0.9rem;
   margin-top: 0.25rem;
+}
+
+.appointment-custom-id {
+  color: #1890ff;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  padding: 0.4rem;
+  background: #e6f7ff;
+  border-radius: 4px;
+  border-left: 3px solid #1890ff;
+  font-family: monospace;
+  word-break: break-all;
 }
 
 .appointment-notes {
