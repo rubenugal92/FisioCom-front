@@ -49,7 +49,7 @@
       <div class="footer-bottom">
         <p>&copy; {{ currentYear }} Bot Manager. Todos los derechos reservados.</p>
         <p class="footer-disclaimer">
-          Esta plataforma se proporciona tal como está. Consulta siempre a un profesional sanitario cualificado.
+          Esta plataforma se proporciona tal como está. No garantizamos resultados específicos ni asumimos responsabilidad por el uso de la plataforma.
         </p>
       </div>
     </div>
