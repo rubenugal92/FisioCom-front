@@ -53,7 +53,8 @@ router.beforeEach((to) => {
   }
 
   // Si la ruta requiere roles y el usuario está autenticado, validar
-  if (to.meta.roles && auth.isAuthenticated && auth.user?.role) {
+  // superadmin tiene acceso a todo
+  if (to.meta.roles && auth.isAuthenticated && auth.user?.role && auth.user.role !== 'superadmin') {
     if (!to.meta.roles.includes(auth.user.role)) {
       return '/calendario'
     }
