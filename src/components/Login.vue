@@ -17,18 +17,18 @@
         </div>
 
         <div class="brand-hero">
-          <h1>Gestiona tu negocio<br/>como un <span class="hero-grad">profesional</span>.</h1>
-          <p>Planning de plantilla, calendario de citas y bot de WhatsApp que atiende a tus clientes. Todo en uno.</p>
+          <h1>Gestiona tu negocio<br/> con ayuda <span class="hero-grad">de tu bot profesional</span>.</h1>
+          <p>Planning de plantilla, calendario de citas para tus clientes y un bot de WhatsApp que los atiende por ti. Todo en uno.</p>
 
           <ul class="feature-list">
-            <li><span class="dot"></span> Reservas automáticas por WhatsApp</li>
-            <li><span class="dot"></span> Planning con vacaciones y bajas</li>
-            <li><span class="dot"></span> Multi-empresa y multi-equipo</li>
+            <li><span class="dot"></span> Reservas/Citas automáticas por WhatsApp</li>
+            <li><span class="dot"></span> Planning con vacaciones y bajas para que entiendas el estado de tu plantilla en un solo vistazo</li>
+            <li><span class="dot"></span> Intuitiva y fácil de usar, sin lios innecesarios</li>
           </ul>
         </div>
 
         <div class="brand-footer">
-          © {{ year }} Bot Manager · Hecho con ♥ para negocios reales
+          © {{ year }} Bot Manager · Hecho con ♥ para negocios reales. By Midgard IT.
         </div>
       </aside>
 
