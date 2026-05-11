@@ -65,6 +65,7 @@
         >
           <div class="appointment-main">
             <div class="appointment-time">{{ formatTime(appointment.datetime) }}</div>
+            <div class="appointment-customer">{{ appointment.customerName }}</div>
             <div class="appointment-phone">{{ appointment.phone }}</div>
           </div>
 
@@ -505,12 +506,18 @@ export default {
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
 }
+.appointment-customer {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+}
 
 .appointment-phone {
   color: var(--text-muted);
   font-size: 0.85rem;
   font-family: var(--font-mono);
 }
+
 
 .appointment-meta {
   display: flex;
