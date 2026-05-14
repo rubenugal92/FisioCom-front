@@ -3,6 +3,7 @@ import LoginPage from '../pages/LoginPage.vue'
 import AppointmentsPage from '../pages/AppointmentsPage.vue'
 import UsersPage from '../pages/UsersPage.vue'
 import PlanningPage from '../pages/PlanningPage.vue'
+import CompaniesPage from '../pages/CompaniesPage.vue'
 import PrivacyPolicyPage from '../pages/PrivacyPolicyPage.vue'
 import TermsConditionsPage from '../pages/TermsConditionsPage.vue'
 import CookiesPolicyPage from '../pages/CookiesPolicyPage.vue'
@@ -29,6 +30,12 @@ const routes = [
     path: '/planning',
     component: PlanningPage,
     meta: { requiresAuth: true, roles: ['user', 'admin'] }
+  },
+
+  {
+    path: '/empresas',
+    component: CompaniesPage,
+    meta: { requiresAuth: true, roles: ['superadmin'] }
   },
 
   { path: '/privacy-policy', component: PrivacyPolicyPage },

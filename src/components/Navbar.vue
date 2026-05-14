@@ -34,6 +34,16 @@
           <span class="nav-icon">📋</span>
           <span>Planning</span>
         </button>
+
+        <button
+          v-if="auth.isSuperAdmin"
+          class="nav-button"
+          :class="{ active: route.path === '/empresas' }"
+          @click="go('/empresas')"
+        >
+          <span class="nav-icon">🏢</span>
+          <span>Empresas</span>
+        </button>
       </nav>
 
       <div class="nav-user">
