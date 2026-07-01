@@ -182,15 +182,24 @@ export default {
     const loadAvailableUsers = async (date) => {
       if (!date) {
         users.value = []
+        form.value.user_id = ''
         return
       }
 
       try {
-        users.value = await getAvailableUsers(date, companies.selectedCompanyId)
-        form.value.user_id = ''
+        const fetched = await getAvailableUsers(date, companies.selectedCompanyId)
+        users.value = fetched || []
+        // Preserve current user selection only if still available
+        const currentId = form.value.user_id
+        if (currentId && users.value.find(u => String(u.id) === String(currentId))) {
+          // keep existing selection
+        } else {
+          form.value.user_id = ''
+        }
       } catch (e) {
         console.error('Error loading available users:', e)
         users.value = []
+        form.value.user_id = ''
       }
     }
 
@@ -225,8 +234,12 @@ export default {
 
     const handleDateChange = async () => {
       await loadAvailableUsers(form.value.date)
-      availableSlots.value = []
       form.value.time = ''
+      availableSlots.value = []
+      // If a user remains selected after reloading, fetch their slots
+      if (form.value.user_id) {
+        await updateAvailableSlots()
+      }
     }
 
     const submitForm = async () => {
