@@ -48,7 +48,7 @@
         <select
           v-model="form.user_id"
           required
-          :disabled="loading || !form.value.date || users.length === 0"
+          :disabled="loading || !form.date || users.length === 0"
           @change="updateAvailableSlots"
         >
           <option value="">Selecciona una fecha primero</option>
@@ -56,7 +56,7 @@
             {{ employee.name }}{{ employee.specialties ? ` (${employee.specialties})` : '' }}
           </option>
         </select>
-        <small v-if="!form.value.date" class="text-muted">
+        <small v-if="!form.date" class="text-muted">
           Elige primero la fecha para ver empleados disponibles.
         </small>
         <small v-else-if="users.length === 0" class="text-danger">
