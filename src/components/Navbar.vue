@@ -3,7 +3,7 @@
     <div class="nav-container">
 
       <div class="nav-brand">
-        <h1>Bot Manager</h1>
+        <h1>Sloty</h1>
       </div>
 
       <nav class="nav-menu" aria-label="Navegación principal">

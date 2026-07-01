@@ -7,7 +7,7 @@
       <section>
         <h2>1. Responsable del Tratamiento</h2>
         <p>
-          Bot Manager es el responsable del tratamiento de tus datos personales. 
+          Sloty es el responsable del tratamiento de tus datos personales. 
           Para consultas sobre privacidad, contacta con: midgardit@midgard-it.com
         </p>
       </section>
@@ -95,12 +95,12 @@
   <h2>9. Encargado del Tratamiento</h2>
 
   <p>
-    Bot Manager actúa como encargado del tratamiento de datos en nombre de los negocios
+    Sloty actúa como encargado del tratamiento de datos en nombre de los negocios
     que utilizan la plataforma para gestionar sus citas y clientes.
   </p>
 
   <p>
-    Midgard IT es responsable de la plataforma Bot Manager.
+    Midgard IT es responsable de la plataforma Sloty.
     Para consultas relacionadas con privacidad y protección de datos,
     puedes contactar en: midgardit@midgard-it.com
   </p>

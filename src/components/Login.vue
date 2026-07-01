@@ -12,8 +12,8 @@
       <!-- Brand panel -->
       <aside class="brand-panel">
         <div class="brand-top">
-          <div class="brand-mark">BM</div>
-          <span class="brand-name">Bot Manager</span>
+          <div class="brand-mark">SL</div>
+          <span class="brand-name">Sloty</span>
         </div>
 
         <div class="brand-hero">
@@ -28,7 +28,7 @@
         </div>
 
         <div class="brand-footer">
-          © {{ year }} Bot Manager · Hecho con ♥ para negocios reales. By Midgard IT.
+          © {{ year }} Sloty · Hecho con ♥ para negocios reales. By Midgard IT.
         </div>
       </aside>
 

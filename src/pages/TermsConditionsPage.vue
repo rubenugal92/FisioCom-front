@@ -7,7 +7,7 @@
       <section>
         <h2>1. Aceptación de Términos</h2>
         <p>
-          Al acceder y utilizar Bot Manager, aceptas estar vinculado por estos términos y condiciones. 
+          Al acceder y utilizar Sloty, aceptas estar vinculado por estos términos y condiciones. 
           Si no estás de acuerdo con alguna parte, te pedimos que no utilices nuestros servicios.
         </p>
       </section>
@@ -15,7 +15,7 @@
       <section>
         <h2>2. Descripción del Servicio</h2>
         <p>
-          Bot Manager es una plataforma de gestión de citas y planificación de plantilla para negocios
+          Sloty es una plataforma de gestión de citas y planificación de plantilla para negocios
           de cualquier sector (peluquerías, clínicas, consultas, entrenadores personales, restaurantes, etc.).
           Nos comprometemos a proporcionar un servicio de calidad, pero no garantizamos disponibilidad 24/7.
         </p>
@@ -36,7 +36,7 @@
 
       <section>
         <h2>4. Uso Permitido</h2>
-        <p>Te comprometes a utilizar Bot Manager únicamente para propósitos legales y de acuerdo con estos términos.</p>
+        <p>Te comprometes a utilizar Sloty únicamente para propósitos legales y de acuerdo con estos términos.</p>
         <p><strong>No deberás:</strong></p>
         <ul>
           <li>Acceder a información confidencial sin autorización</li>
@@ -58,7 +58,7 @@
       <section>
         <h2>6. Propiedad Intelectual</h2>
         <p>
-          Todo el contenido en Bot Manager (diseño, texto, gráficos, logos) está protegido por derechos de autor. 
+          Todo el contenido en Sloty (diseño, texto, gráficos, logos) está protegido por derechos de autor. 
           No puedes reproducir, distribuir o transmitir ningún contenido sin consentimiento previo.
         </p>
       </section>
@@ -66,7 +66,7 @@
       <section>
         <h2>7. Limitación de Responsabilidad</h2>
         <p>
-          Bot Manager se proporciona "tal como está". No garantizamos:
+          Sloty se proporciona "tal como está". No garantizamos:
         </p>
         <ul>
           <li>Disponibilidad continua del servicio</li>

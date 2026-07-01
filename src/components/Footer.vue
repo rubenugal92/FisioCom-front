@@ -4,7 +4,7 @@
       <div class="footer-content">
         <div class="footer-section">
           <h3>Sobre Nosotros</h3>
-          <p>Bot Manager - Gestión de citas de clientes y planificación de empleados</p>
+          <p>Sloty - Gestión de citas de clientes y planificación de empleados</p>
         </div>
 
         <div class="footer-section">
@@ -47,7 +47,7 @@
       </div>
 
       <div class="footer-bottom">
-        <p>&copy; {{ currentYear }} Bot Manager. Todos los derechos reservados.</p>
+        <p>&copy; {{ currentYear }} Sloty. Todos los derechos reservados.</p>
         <p class="footer-disclaimer">
           Esta plataforma se proporciona tal como está. No garantizamos resultados específicos ni asumimos responsabilidad por el uso de la plataforma.
         </p>
