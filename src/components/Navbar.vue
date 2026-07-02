@@ -154,19 +154,7 @@ const handleLogout = () => {
   router.push('/login')
 }
 
-const handleConnectWhatsApp = async () => {
-  try {
-    connecting.value = true
-    const companyId = companies.selectedCompanyId || auth.user?.company_id
-    const data = await connectWhatsApp(companyId)
-    window.location.href = data.url
-  } catch (error) {
-    console.error(error)
-    alert(error.response?.data?.error || error.message || 'No se pudo iniciar la conexión con WhatsApp')
-  } finally {
-    connecting.value = false
-  }
-}
+
 const showWhatsappModal = ref(false)
 
 const handleConnectWhatsApp = () => {
