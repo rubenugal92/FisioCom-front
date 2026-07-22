@@ -317,12 +317,14 @@ export default {
   flex-direction: column;
   gap: 1.25rem;
   position: relative;
+  padding: 10px;
 }
 
 .calendar.fullscreen {
   flex-direction: row;
-  gap: 0;
+  gap: 1.5rem;
   align-items: flex-start;
+  padding: 10px;
 }
 
 .calendar-grid {
@@ -334,7 +336,7 @@ export default {
 }
 
 .calendar.fullscreen .calendar-grid {
-  flex: 1;
+  flex: 0.85;
   gap: 0.3rem;
 }
 
@@ -605,7 +607,9 @@ export default {
 
 /* ---------- list ---------- */
 .appointments-list {
-  margin-top: 0.5rem;
+  margin-top: 1.5rem;
+  padding-left: 1.5rem;
+  border-left: 2px solid var(--border);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
