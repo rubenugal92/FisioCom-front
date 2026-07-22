@@ -13,7 +13,7 @@
            :class="{ active: route.path === '/calendario' }"
            @click="go('/calendario')"
          >
-           <i class="ri-calendar-2-line"></i>
+          <i class="ri-calendar-schedule-line"></i>
            <span>Citas</span>
          </button>
 
@@ -32,7 +32,7 @@
            :class="{ active: route.path === '/planning' }"
            @click="go('/planning')"
          >
-           <i class="ri-list-check-line"></i>
+           <i class="ri-calendar-2-line"></i>
            <span>Planning</span>
          </button>
 
