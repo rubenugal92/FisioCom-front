@@ -5,17 +5,11 @@
       <div class="calendar-wrapper">
         <Calendar
           :appointments="store.items"
+          :is-fullscreen="isFullscreen"
           @appointment-selected="store.select"
           @date-selected="onDateSelected"
+          @toggle-fullscreen="isFullscreen = !isFullscreen"
         />
-        <button
-          class="fullscreen-toggle"
-          @click="isFullscreen = !isFullscreen"
-          :title="isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'"
-        >
-          <i v-if="isFullscreen" class="ri-fullscreen-exit-line"></i>
-          <i v-else class="ri-fullscreen-line"></i>
-        </button>
       </div>
     </div>
 
@@ -87,6 +81,7 @@ const handleDelete = async (id) => {
   padding: 1.5rem;
   height: calc(100vh - 80px);
   overflow: hidden;
+  align-items: start;
 }
 
 .app-container.fullscreen {
@@ -98,6 +93,7 @@ const handleDelete = async (id) => {
   flex-direction: column;
   overflow: auto;
   position: relative;
+  height: 100%;
 }
 
 .calendar-wrapper {
@@ -105,38 +101,14 @@ const handleDelete = async (id) => {
   flex: 1;
   display: flex;
   flex-direction: column;
-}
-
-.fullscreen-toggle {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  background: #4338ca;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 10px;
-  cursor: pointer;
-  font-size: 1.2rem;
-  z-index: 100;
-  transition: background 0.2s, transform 0.2s;
-}
-
-.fullscreen-toggle:hover {
-  background: #3730a3;
-  transform: scale(1.05);
-}
-
-.fullscreen-toggle i {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: auto;
 }
 
 .right-panel {
   display: flex;
   flex-direction: column;
   overflow: auto;
+  height: 100%;
 }
 
 .fullscreen-detail {
