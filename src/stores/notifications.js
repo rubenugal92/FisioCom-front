@@ -21,8 +21,10 @@ export const useNotificationsStore = defineStore('notifications', {
       }
 
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-      const host = window.location.host
-      const wsUrl = `${protocol}//${host}/ws?userId=${auth.user.id}&token=${auth.token}`
+      // Use VITE_API_URL for WebSocket (backend domain, not frontend)
+      const apiUrl = import.meta.env.VITE_API_URL || window.location.origin
+      const apiHost = new URL(apiUrl).host
+      const wsUrl = `${protocol}//${apiHost}/ws?userId=${auth.user.id}&token=${auth.token}`
       console.log(`🔌 Attempting WebSocket connection: ${wsUrl}`);
 
       try {
