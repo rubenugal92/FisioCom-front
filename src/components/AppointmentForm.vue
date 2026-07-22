@@ -51,7 +51,7 @@
           :disabled="loading || !form.date || availableSlots.length === 0"
           @change="handleTimeChange"
         >
-          <option value="">Selecciona una fecha primero</option>
+          <option value="">Selecciona una hora</option>
           <option v-for="slot in availableSlots" :key="slot" :value="slot">
             {{ slot }}
           </option>
