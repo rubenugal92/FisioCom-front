@@ -7,7 +7,7 @@
         <h1>Sloty</h1>
       </div>
 
-       <nav class="nav-menu" aria-label="Navegación principal">
+        <nav v-if="!fullscreenStore.isFullscreen" class="nav-menu" aria-label="Navegación principal">
          <button
            class="nav-button"
            :class="{ active: route.path === '/calendario' }"
@@ -123,6 +123,7 @@ import NotificationBell from './NotificationBell.vue'
 const router = useRouter()
 const route = useRoute()
 const auth = useAuthStore()
+const fullscreenStore = useFullscreenStore()
 const companies = useCompaniesStore()
 const appointments = useAppointmentsStore()
 const users = useUsersStore()

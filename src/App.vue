@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="app-shell" :class="{ fullscreen: fullscreenStore.isFullscreen }">
-    <Navbar v-if="showNavbar && !fullscreenStore.isFullscreen" />
+    <Navbar />
 
     <main class="page-content">
       <router-view />

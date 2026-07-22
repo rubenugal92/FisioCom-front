@@ -478,9 +478,5 @@ const handleDelete = async (id) => {
   .right-panel {
     display: none;
   }
-
-  .app-container.fullscreen {
-    grid-template-columns: 1fr;
-  }
 }
 </style>
