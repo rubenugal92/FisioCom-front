@@ -1,20 +1,20 @@
 <template>
-  <div class="app-container" :class="{ fullscreen: isFullscreen }">
+  <div class="app-container" :class="{ fullscreen: fullscreenStore.isFullscreen }">
 
     <div class="left-panel">
       <div class="calendar-wrapper">
         <Calendar
           :appointments="store.items"
-          :is-fullscreen="isFullscreen"
+          :is-fullscreen="fullscreenStore.isFullscreen"
           @appointment-selected="store.select"
           @date-selected="onDateSelected"
           @day-appointments-changed="onDayAppointmentsChanged"
-          @toggle-fullscreen="isFullscreen = !isFullscreen"
+          @toggle-fullscreen="fullscreenStore.toggleFullscreen()"
         />
       </div>
     </div>
 
-    <div v-if="!isFullscreen" class="right-panel">
+    <div v-if="!fullscreenStore.isFullscreen" class="right-panel">
       <AppointmentForm
         :appointment="store.selected"
         :selected-date="selectedDate"
@@ -24,7 +24,7 @@
       />
     </div>
 
-    <div v-if="isFullscreen" class="right-panel fullscreen-appointments">
+    <div v-if="fullscreenStore.isFullscreen" class="right-panel fullscreen-appointments">
       <div class="list-header">
         <h3 v-if="selectedDate">{{ selectedDate }}</h3>
         <h3 v-else class="muted-title">Selecciona un día</h3>
@@ -83,7 +83,7 @@
       </div>
     </div>
 
-    <div v-if="isFullscreen && store.selected" class="fullscreen-detail">
+    <div v-if="fullscreenStore.isFullscreen && store.selected" class="fullscreen-detail">
       <button
         class="fullscreen-detail-close"
         @click="store.select(null)"
@@ -106,14 +106,18 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useAppointmentsStore } from '../stores/appointments'
+import { useFullscreenStore } from '../stores/fullscreen'
 
 import Calendar from '../components/Calendar.vue'
 import AppointmentForm from '../components/AppointmentForm.vue'
 
 const store = useAppointmentsStore()
+const fullscreenStore = useFullscreenStore()
 const selectedDate = ref(null)
-const isFullscreen = ref(false)
 const appointmentsForSelectedDay = ref([])
+
+// Usa fullscreenStore.isFullscreen como reactive
+const isFullscreen = fullscreenStore.isFullscreen
 
 onMounted(() => {
   store.load()
@@ -167,7 +171,7 @@ const handleDelete = async (id) => {
 
 .app-container.fullscreen {
   grid-template-columns: 3fr 1.2fr;
-  gap: 1rem;
+  gap: 0;
   padding: 0;
   height: 100%;
 }
@@ -182,7 +186,7 @@ const handleDelete = async (id) => {
 
 .app-container.fullscreen .left-panel {
   overflow: hidden;
-  padding: 0.75rem 0 0.75rem 0.75rem;
+  padding: 0;
 }
 
 .calendar-wrapper {
@@ -205,7 +209,7 @@ const handleDelete = async (id) => {
 }
 
 .app-container.fullscreen .right-panel {
-  padding: 0.75rem 0.75rem 0.75rem 0;
+  padding: 0;
 }
 
 .fullscreen-detail {

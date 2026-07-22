@@ -322,7 +322,7 @@ export default {
 
 .calendar.fullscreen {
   flex-direction: row;
-  gap: 0.5rem;
+  gap: 0;
   align-items: flex-start;
 }
 
